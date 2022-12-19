@@ -1,38 +1,46 @@
-# Домашнее задание к занятию "4.1. Командная оболочка Bash: Практические навыки"
-
-### Цель задания
-
-В результате выполнения этого задания вы:
-
-1. Познакомитесь с командной оболочкой Bash.
-2. Используете синтаксис bash-скриптов.
-3. Узнаете, как написать скрипт в файл так, чтобы он мог выполниться с параметрами и без.
-
-
-### Чеклист готовности к домашнему заданию
-
-1. У вас настроена виртуальная машина/контейнер/установлена гостевая ОС семейств Linux, Unix, MacOS.
-2. Установлен Bash.
-
-
-### Инструкция к заданию
-
-1. Скопируйте в свой .md-файл содержимое этого файла; исходники можно посмотреть [здесь](https://raw.githubusercontent.com/netology-code/sysadm-homeworks/devsys10/04-script-01-bash/README.md).
-2. Заполните недостающие части документа решением задач (заменяйте `???`, остальное в шаблоне не меняйте, чтобы не сломать форматирование текста, подсветку синтаксиса). Вместо логов можно вставить скриншоты по желанию.
-3. Для проверки домашнего задания преподавателем в личном кабинете прикрепите и отправьте ссылку на решение в виде md-файла в вашем Github.
-4. Любые вопросы по выполнению заданий спрашивайте в чате учебной группы и/или в разделе “Вопросы по заданию” в личном кабинете.
+# Домашнее задание к занятию "6.2. SQL"
 
 ------
 
 ## Задание 1
 
-Есть скрипт:
+Используя docker поднимите инстанс PostgreSQL (версию 12) c 2 volume, в который будут складываться данные БД и бэкапы.
+Приведите получившуюся команду или docker-compose манифест.
+
+### Ответ:
 ```bash
-a=1
-b=2
-c=a+b
-d=$a+$b
-e=$(($a+$b))
+root@server1:/home/vagrant# docker pull postgres:12
+12: Pulling from library/postgres
+025c56f98b67: Pull complete
+26dc25c16f4e: Pull complete
+a032d8a894de: Pull complete
+40dba7d35750: Pull complete
+8ebb44a56070: Pull complete
+813fd6cf203b: Pull complete
+7024f61bf8f5: Pull complete
+23f986b322e8: Pull complete
+2ea53cc53a00: Pull complete
+f6513efd6ed7: Pull complete
+946bdd08f546: Pull complete
+219e7aa178ac: Pull complete
+1a29c4b8415a: Pull complete
+Digest: sha256:10dbdea0299264e845e73e77c8f7c09b570cc610a30d17b1b09887feecfcc575
+Status: Downloaded newer image for postgres:12
+docker.io/library/postgres:12
+```
+```bash
+root@server1:/home/vagrant# docker volume create vol2
+vol2
+```
+```bash
+root@server1:/home/vagrant# docker volume create vol1
+vol1
+```
+```bash
+root@server1:/home/vagrant# docker run --rm --name pg-docker -e POSTGRES_PASSWORD=postgres -ti -p 5432:5432 -v vol1:/var/lib/postgresql/data -v vol2:/var/lib/postgresql postgres:12
+```
+```bash
+PostgreSQL 12.12 (Ubuntu 12.12-0ubuntu0.20.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 9.4.0-1ubuntu1~20.04.1) 9.4.0, 64-bit
 ```
 
 Какие значения переменным c,d,e будут присвоены? Почему?
