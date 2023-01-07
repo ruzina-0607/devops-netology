@@ -11,6 +11,7 @@ vagrant@vagrant:~/pkc$ yc compute image list
 | fd8f32s6camma9729vqa | centos-7-base | centos | f2ei2tsbd97v7jap5rhc | READY  |
 +----------------------+---------------+--------+----------------------+--------+
 ```
+<img width="637" alt="image" src="https://user-images.githubusercontent.com/104915472/211166096-ffd55611-7f27-46b7-910e-20e0c97f95ae.png">
 
 Задача 2
 --------------
