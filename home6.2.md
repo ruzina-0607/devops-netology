@@ -9,71 +9,145 @@
 
 ### Ответ:
 ```bash
-root@server1:/home/vagrant# docker pull postgres:12
-12: Pulling from library/postgres
-025c56f98b67: Pull complete
-26dc25c16f4e: Pull complete
-a032d8a894de: Pull complete
-40dba7d35750: Pull complete
-8ebb44a56070: Pull complete
-813fd6cf203b: Pull complete
-7024f61bf8f5: Pull complete
-23f986b322e8: Pull complete
-2ea53cc53a00: Pull complete
-f6513efd6ed7: Pull complete
-946bdd08f546: Pull complete
-219e7aa178ac: Pull complete
-1a29c4b8415a: Pull complete
-Digest: sha256:10dbdea0299264e845e73e77c8f7c09b570cc610a30d17b1b09887feecfcc575
-Status: Downloaded newer image for postgres:12
-docker.io/library/postgres:12
+postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges
+-----------+----------+----------+-------------+-------------+-----------------------
+ postgres  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
+ template0 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+(3 rows)
 ```
 ```bash
-root@server1:/home/vagrant# docker volume create vol2
-vol2
-```
-```bash
-root@server1:/home/vagrant# docker volume create vol1
-vol1
-```
-```bash
-root@server1:/home/vagrant# docker run --rm --name pg-docker -e POSTGRES_PASSWORD=postgres -ti -p 5432:5432 -v vol1:/var/lib/postgresql/data -v vol2:/var/lib/postgresql postgres:12
-```
-```bash
-vagrant@vagrant:/$ sudo docker ps -a
-CONTAINER ID   IMAGE         COMMAND                  CREATED          STATUS          PORTS                                       NAMES
-8aefbd67ef30   postgres:12   "docker-entrypoint.s…"   12 minutes ago   Up 12 minutes   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp   pg-docker
-```
-
-Какие значения переменным c,d,e будут присвоены? Почему?
-
-| Переменная  | Значение | Обоснование |
-| ------------- | ------------- | ------------- |
-| `c`  | ???  | ??? |
-| `d`  | ???  | ??? |
-| `e`  | ???  | ??? |
-
+version: "3.7"
+services:
+  postgres:
+    image: postgres:12
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+    volumes:
+      - ./data:/var/lib/postgresql/data
+      - ./backup:/data/backup/postgres
+    ports:
+      - "5432:5432"
+    restart: always
+```    
 ----
 
 ## Задание 2
 
-На нашем локальном сервере упал сервис и мы написали скрипт, который постоянно проверяет его доступность, записывая дату проверок до тех пор, пока сервис не станет доступным (после чего скрипт должен завершиться). В скрипте допущена ошибка, из-за которой выполнение не может завершиться, при этом место на Жёстком Диске постоянно уменьшается. Что необходимо сделать, чтобы его исправить:
-```bash
-while ((1==1)
-do
-	curl https://localhost:4757
-	if (($? != 0))
-	then
-		date >> curl.log
-	fi
-done
-```
+В БД из задачи 1:
+- создайте пользователя test-admin-user и БД test_db
+- в БД test_db создайте таблицу orders и clients (спeцификация таблиц ниже)
+- предоставьте привилегии на все операции пользователю test-admin-user на таблицы БД test_db
+- создайте пользователя test-simple-user
+- предоставьте пользователю test-simple-user права на SELECT/INSERT/UPDATE/DELETE данных таблиц БД test_db
+
+Таблица orders:
+- id (serial primary key)
+- наименование (string)
+- цена (integer)
+
+Таблица clients:
+- id (serial primary key)
+- фамилия (string)
+- страна проживания (string, index)
+- заказ (foreign key orders)
+
+Приведите:
+- итоговый список БД после выполнения пунктов выше,
+- описание таблиц (describe)
+- SQL-запрос для выдачи списка пользователей с правами над таблицами test_db
+- список пользователей с правами над таблицами test_db
 
 ### Ваш скрипт:
 ```bash
-???
-```
+CREATE USER "test-admin-user" WITH LOGIN;
+CREATE DATABASE test_db;
+CREATE TABLE orders (
+	id SERIAL PRIMARY KEY, 
+	наименование TEXT, 
+	цена INT
+);
 
+CREATE TABLE clients (
+	id SERIAL PRIMARY KEY, 
+	фамилия TEXT, 
+	"страна проживания" TEXT, 
+	заказ INT REFERENCES orders (id)
+);
+
+CREATE INDEX ON clients ("страна проживания");
+
+GRANT ALL ON TABLE clients, orders TO "test-admin-user";
+CREATE USER "test-simple-user" WITH LOGIN;
+GRANT SELECT,INSERT,UPDATE,DELETE ON TABLE clients,orders TO "test-simple-user";
+```
+итоговый список БД после выполнения пунктов выше
+```bash
+postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges
+-----------+----------+----------+-------------+-------------+-----------------------
+ postgres  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
+ template0 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ test_db   | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
+(4 rows)
+```
+описание таблиц (describe)
+```bash
+                                                   Table "public.orders"
+    Column    |  Type   | Collation | Nullable |              Default               | Storage  | Stats target | Description
+--------------+---------+-----------+----------+------------------------------------+----------+--------------+-------------
+ id           | integer |           | not null | nextval('orders_id_seq'::regclass) | plain    |              |
+ наименование | text    |           |          |                                    | extended |              |
+ цена         | integer |           |          |                                    | plain    |              |
+Indexes:
+    "orders_pkey" PRIMARY KEY, btree (id)
+Referenced by:
+    TABLE "clients" CONSTRAINT "clients_заказ_fkey" FOREIGN KEY ("заказ") REFERENCES orders(id)
+Access method: heap
+```
+```bash
+                                                      Table "public.clients"
+      Column       |  Type   | Collation | Nullable |               Default               | Storage  | Stats target | Description
+-------------------+---------+-----------+----------+-------------------------------------+----------+--------------+-------------
+ id                | integer |           | not null | nextval('clients_id_seq'::regclass) | plain    |              |
+ фамилия           | text    |           |          |                                     | extended |              |
+ страна проживания | text    |           |          |                                     | extended |              |
+ заказ             | integer |           |          |                                     | plain    |              |
+Indexes:
+    "clients_pkey" PRIMARY KEY, btree (id)
+    "clients_страна проживания_idx" btree ("страна проживания")
+Foreign-key constraints:
+    "clients_заказ_fkey" FOREIGN KEY ("заказ") REFERENCES orders(id)
+Access method: heap
+```
+SQL-запрос для выдачи списка пользователей с правами над таблицами test_db
+```bash
+SELECT table_name, array_agg(privilege_type), grantee
+FROM information_schema.table_privileges
+WHERE table_name = 'orders' OR table_name = 'clients'
+GROUP BY table_name, grantee ;
+```
+список пользователей с правами над таблицами test_db
+```bash
+ table_name |                         array_agg                         |     grantee
+------------+-----------------------------------------------------------+------------------
+ clients    | {INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT} | postgres
+ clients    | {INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT} | test-admin-user
+ clients    | {DELETE,INSERT,SELECT,UPDATE}                             | test-simple-user
+ orders     | {INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT} | postgres
+ orders     | {INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT} | test-admin-user
+ orders     | {DELETE,SELECT,UPDATE,INSERT}                             | test-simple-user
+(6 rows)
+```
 ---
 
 ## Задание 3
