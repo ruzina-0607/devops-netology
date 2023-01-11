@@ -246,5 +246,130 @@ INNER JOIN orders ON "заказ"=orders."id";
  Иоганн Себастьян Бах |    20 | Гитара
 (3 rows)
 ```
+---
+## Задание 5
+
+Получите полную информацию по выполнению запроса выдачи всех пользователей из задачи 4 (используя директиву EXPLAIN).
+Приведите получившийся результат и объясните что значат полученные значения.
+
+### Ответ:
+```bash
+EXPLAIN SELECT * FROM clients
+WHERE "заказ" IS NOT null;
+```
+```bash
+                        QUERY PLAN
+--------------------------------------------------------
+ Seq Scan on clients  (cost=0.00..1.05 rows=5 width=72)
+   Filter: ("заказ" IS NOT NULL)
+(2 rows)
+```
+Сначала по порядку поисходит чтение данных из таблицы клиенты, cost получения 1 значения - 0.00, а cost всех строк 1.05.
+Количество проверенных строк 5, размер каждой строки 72 байт. Фильм при этом используется IS NOT NULL.
 
 ---
+## Задание 6
+
+Создайте бэкап БД test_db и поместите его в volume, предназначенный для бэкапов (см. Задачу 1).
+Остановите контейнер с PostgreSQL (но не удаляйте volumes).
+Поднимите новый пустой контейнер с PostgreSQL.
+Восстановите БД test_db в новом контейнере.
+Приведите список операций, который вы применяли для бэкапа данных и восстановления.
+
+### Ответ:
+```bash
+postgres@vagrant:~$ pg_dump -U postgres -F t test_db > test_db_backup.sql
+```
+```bash
+vagrant@vagrant:~/bd$ sudo docker stop bd_postgres_1
+bd_postgres_1
+```
+```bash
+vagrant@vagrant:~$ sudo docker ps
+CONTAINER ID   IMAGE         COMMAND                  CREATED          STATUS          PORTS                                       NAMES
+c1f8df656c55   postgres:12   "docker-entrypoint.s…"   26 seconds ago   Up 16 seconds   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp   bd1_postgres_1
+```
+```bash
+CREATE USER "test-admin-user" WITH LOGIN;
+CREATE ROLE
+
+CREATE USER "test-simple-user" WITH LOGIN;
+CREATE ROLE
+```
+```bash
+postgres@vagrant:~$ psql -f test_db_backup.sql
+        
+SET
+SET
+SET
+SET
+ set_config
+------------
+
+(1 row)
+
+SET
+SET
+SET
+SET
+DROP DATABASE
+CREATE DATABASE
+ALTER DATABASE
+You are now connected to database "test_db" as user "postgres".
+SET
+SET
+SET
+SET
+SET
+ set_config
+------------
+
+(1 row)
+
+SET
+SET
+SET
+SET
+```
+```bash
+postgres=# \l
+                                  List of databases
+   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges
+-----------+----------+----------+-------------+-------------+-----------------------
+ postgres  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
+ template0 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ template1 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
+           |          |          |             |             | postgres=CTc/postgres
+ test_db   | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
+(4 rows)
+
+postgres=# \d+ orders
+                                                   Table "public.orders"
+    Column    |  Type   | Collation | Nullable |              Default               | Storage  | Stats target | Description
+--------------+---------+-----------+----------+------------------------------------+----------+--------------+-------------
+ id           | integer |           | not null | nextval('orders_id_seq'::regclass) | plain    |              |
+ наименование | text    |           |          |                                    | extended |              |
+ цена         | integer |           |          |                                    | plain    |              |
+Indexes:
+    "orders_pkey" PRIMARY KEY, btree (id)
+Referenced by:
+    TABLE "clients" CONSTRAINT "clients_заказ_fkey" FOREIGN KEY ("заказ") REFERENCES orders(id)
+Access method: heap
+
+postgres=# \d+ clients
+                                                      Table "public.clients"
+      Column       |  Type   | Collation | Nullable |               Default               | Storage  | Stats target | Description
+-------------------+---------+-----------+----------+-------------------------------------+----------+--------------+-------------
+ id                | integer |           | not null | nextval('clients_id_seq'::regclass) | plain    |              |
+ фамилия           | text    |           |          |                                     | extended |              |
+ страна проживания | text    |           |          |                                     | extended |              |
+ заказ             | integer |           |          |                                     | plain    |              |
+Indexes:
+    "clients_pkey" PRIMARY KEY, btree (id)
+    "clients_страна проживания_idx" btree ("страна проживания")
+    "clients_страна проживания_idx1" btree ("страна проживания")
+Foreign-key constraints:
+    "clients_заказ_fkey" FOREIGN KEY ("заказ") REFERENCES orders(id)
+Access method: heap
+```
