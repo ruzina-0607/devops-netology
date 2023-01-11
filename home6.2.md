@@ -230,7 +230,21 @@ SELECT 'clients' AS name_table,  COUNT(*) AS number_rows  FROM clients;
 
 ### Ответ:
 ```bash
-???
+UPDATE clients SET "заказ"=18 WHERE id=16;
+UPDATE clients SET "заказ"=19 WHERE id=17;
+UPDATE clients SET "заказ"=20 WHERE id=18;
+
+SELECT "фамилия","заказ",orders."наименование"
+FROM clients
+INNER JOIN orders ON "заказ"=orders."id";
+```
+```bash
+       фамилия        | заказ | наименование
+----------------------+-------+--------------
+ Иванов Иван Иванович |    18 | Книга
+ Петров Петр Петрович |    19 | Монитор
+ Иоганн Себастьян Бах |    20 | Гитара
+(3 rows)
 ```
 
 ---
