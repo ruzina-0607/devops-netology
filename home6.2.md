@@ -291,10 +291,9 @@ c1f8df656c55   postgres:12   "docker-entrypoint.s…"   26 seconds ago   Up 16 s
 ```
 ```bash
 CREATE USER "test-admin-user" WITH LOGIN;
-CREATE ROLE
-
+GRANT ALL ON TABLE clients, orders TO "test-admin-user";
 CREATE USER "test-simple-user" WITH LOGIN;
-CREATE ROLE
+GRANT SELECT,INSERT,UPDATE,DELETE ON TABLE clients,orders TO "test-simple-user";
 ```
 ```bash
 postgres@vagrant:~$ psql -f test_db_backup.sql
