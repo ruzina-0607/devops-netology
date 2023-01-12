@@ -114,210 +114,128 @@ mysql> SELECT count(*) FROM orders WHERE price > 300;
 
 ## Задание 2
 
-В БД из задачи 1:
-- создайте пользователя test-admin-user и БД test_db
-- в БД test_db создайте таблицу orders и clients (спeцификация таблиц ниже)
-- предоставьте привилегии на все операции пользователю test-admin-user на таблицы БД test_db
-- создайте пользователя test-simple-user
-- предоставьте пользователю test-simple-user права на SELECT/INSERT/UPDATE/DELETE данных таблиц БД test_db
+Создайте пользователя test в БД c паролем test-pass, используя:
+- плагин авторизации mysql_native_password
+- срок истечения пароля - 180 дней
+- количество попыток авторизации - 3
+- максимальное количество запросов в час - 100
+- аттрибуты пользователя:
+	- Фамилия "Pretty"
+	- Имя "James"
+Предоставьте привелегии пользователю test на операции SELECT базы test_db.
 
-Таблица orders:
-- id (serial primary key)
-- наименование (string)
-- цена (integer)
-
-Таблица clients:
-- id (serial primary key)
-- фамилия (string)
-- страна проживания (string, index)
-- заказ (foreign key orders)
-
-Приведите:
-- итоговый список БД после выполнения пунктов выше,
-- описание таблиц (describe)
-- SQL-запрос для выдачи списка пользователей с правами над таблицами test_db
-- список пользователей с правами над таблицами test_db
+Используя таблицу INFORMATION_SCHEMA.USER_ATTRIBUTES получите данные по пользователю test и приведите в ответе к задаче.
 
 ### Ответ:
 ```bash
-CREATE USER "test-admin-user" WITH LOGIN;
-CREATE DATABASE test_db;
-CREATE TABLE orders (
-	id SERIAL PRIMARY KEY, 
-	наименование TEXT, 
-	цена INT
-);
+mysql> CREATE USER 'test'@'localhost'
+TEMPTS 3
+ATTRIBUTE '{"fname": "James", "lname": "Pretty"}';    -> IDENTIFIED WITH mysql_native_password BY 'test-pass'
+    -> WITH MAX_QUERIES_PER_HOUR 100
+    -> PASSWORD EXPIRE INTERVAL 180 DAY
+    -> FAILED_LOGIN_ATTEMPTS 3
+    -> ATTRIBUTE '{"fname": "James", "lname": "Pretty"}';
+Query OK, 0 rows affected (0.05 sec)
 
-CREATE TABLE clients (
-	id SERIAL PRIMARY KEY, 
-	фамилия TEXT, 
-	"страна проживания" TEXT, 
-	заказ INT REFERENCES orders (id)
-);
+mysql> GRANT SELECT ON test_db.* TO 'test'@'localhost';
+Query OK, 0 rows affected, 1 warning (0.02 sec)
 
-CREATE INDEX ON clients ("страна проживания");
-
-GRANT ALL ON TABLE clients, orders TO "test-admin-user";
-CREATE USER "test-simple-user" WITH LOGIN;
-GRANT SELECT,INSERT,UPDATE,DELETE ON TABLE clients,orders TO "test-simple-user";
-```
-итоговый список БД после выполнения пунктов выше
-```bash
-postgres=# \l
-                                  List of databases
-   Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges
------------+----------+----------+-------------+-------------+-----------------------
- postgres  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
- template0 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
-           |          |          |             |             | postgres=CTc/postgres
- template1 | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +
-           |          |          |             |             | postgres=CTc/postgres
- test_db   | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |
-(4 rows)
-```
-описание таблиц (describe)
-```bash
-                                                   Table "public.orders"
-    Column    |  Type   | Collation | Nullable |              Default               | Storage  | Stats target | Description
---------------+---------+-----------+----------+------------------------------------+----------+--------------+-------------
- id           | integer |           | not null | nextval('orders_id_seq'::regclass) | plain    |              |
- наименование | text    |           |          |                                    | extended |              |
- цена         | integer |           |          |                                    | plain    |              |
-Indexes:
-    "orders_pkey" PRIMARY KEY, btree (id)
-Referenced by:
-    TABLE "clients" CONSTRAINT "clients_заказ_fkey" FOREIGN KEY ("заказ") REFERENCES orders(id)
-Access method: heap
-```
-```bash
-                                                      Table "public.clients"
-      Column       |  Type   | Collation | Nullable |               Default               | Storage  | Stats target | Description
--------------------+---------+-----------+----------+-------------------------------------+----------+--------------+-------------
- id                | integer |           | not null | nextval('clients_id_seq'::regclass) | plain    |              |
- фамилия           | text    |           |          |                                     | extended |              |
- страна проживания | text    |           |          |                                     | extended |              |
- заказ             | integer |           |          |                                     | plain    |              |
-Indexes:
-    "clients_pkey" PRIMARY KEY, btree (id)
-    "clients_страна проживания_idx" btree ("страна проживания")
-Foreign-key constraints:
-    "clients_заказ_fkey" FOREIGN KEY ("заказ") REFERENCES orders(id)
-Access method: heap
-```
-SQL-запрос для выдачи списка пользователей с правами над таблицами test_db
-```bash
-SELECT table_name, array_agg(privilege_type), grantee
-FROM information_schema.table_privileges
-WHERE table_name = 'orders' OR table_name = 'clients'
-GROUP BY table_name, grantee ;
-```
-список пользователей с правами над таблицами test_db
-```bash
- table_name |                         array_agg                         |     grantee
-------------+-----------------------------------------------------------+------------------
- clients    | {INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT} | postgres
- clients    | {INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT} | test-admin-user
- clients    | {DELETE,INSERT,SELECT,UPDATE}                             | test-simple-user
- orders     | {INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT} | postgres
- orders     | {INSERT,TRIGGER,REFERENCES,TRUNCATE,DELETE,UPDATE,SELECT} | test-admin-user
- orders     | {DELETE,SELECT,UPDATE,INSERT}                             | test-simple-user
-(6 rows)
+mysql> select * from information_schema.user_attributes where user='test';
++------+-----------+---------------------------------------+
+| USER | HOST      | ATTRIBUTE                             |
++------+-----------+---------------------------------------+
+| test | localhost | {"fname": "James", "lname": "Pretty"} |
++------+-----------+---------------------------------------+
+1 row in set (0.01 sec)
 ```
 ---
 
 ## Задание 3
 
-Используя SQL синтаксис - наполните таблицы следующими тестовыми данными:
-
-Таблица orders
-| Наименование  | цена | 
-| ------------- | ------------- |
-| `Шоколад`  | 10  |
-| `Принтер`  | 3000  |
-| `Книга`  | 500  |
-| `Монитор`  | 7000  |
-| `Гитара`  | 4000  |
-
-Таблица clients
-| ФИО  | Страна проживания | 
-| ------------- | ------------- |
-| `Иванов Иван Иванович`  | USA  |
-| `Петров Петр Петрович`  | Canada  |
-| `Иоганн Себастьян Бах`  | Japan  |
-| `Ронни Джеймс Дио`  | Russia  |
-| `Ritchie Blackmore`  | Russia  |
-
-Используя SQL синтаксис:
-
-- вычислите количество записей для каждой таблицы
-- приведите в ответе:
-	- запросы
-	- результаты их выполнения.
+Установите профилирование SET profiling = 1. Изучите вывод профилирования команд SHOW PROFILES;.
+Исследуйте, какой engine используется в таблице БД test_db и приведите в ответе.
+Измените engine и приведите время выполнения и запрос на изменения из профайлера в ответе:
+- на MyISAM
+- на InnoDB
 
 ### Ответ:
 ```bash
-INSERT INTO orders (наименование, цена )
-VALUES 
-    ('Шоколад', '10'),
-    ('Принтер', '3000'),
-    ('Книга', '500'),
-    ('Монитор', '7000'),
-    ('Гитара', '4000')
-;
-```
-```bash
-INSERT INTO clients ("фамилия", "страна проживания")
-VALUES 
-    ('Иванов Иван Иванович', 'USA'),
-    ('Петров Петр Петрович', 'Canada'),
-    ('Иоганн Себастьян Бах', 'Japan'),
-    ('Ронни Джеймс Дио', 'Russia'),
-    ('Ritchie Blackmore', 'Russia')
-;
-```
-```bash
-name_table | number_rows
-------------+-------------
- orders     |           5
- clients    |           5
-(2 rows)
-```
-```bash
-SELECT 'orders' AS name_table,  COUNT(*) AS number_rows FROM orders
-UNION ALL
-SELECT 'clients' AS name_table,  COUNT(*) AS number_rows  FROM clients;
+mysql> use test_db
+Database changed
+mysql> SET profiling = 1;
+Query OK, 0 rows affected, 1 warning (0.00 sec)
+
+mysql> show profiles;
++----------+------------+-------------------+
+| Query_ID | Duration   | Query             |
++----------+------------+-------------------+
+|        1 | 0.00079250 | SELECT DATABASE() |
+|        2 | 0.00212975 | SET profiling = 1 |
++----------+------------+-------------------+
+2 rows in set, 1 warning (0.00 sec)
+
+mysql> SELECT TABLE_NAME,
+    ->         ENGINE
+    -> FROM   information_schema.TABLES
+    -> WHERE  TABLE_SCHEMA = 'test_db';
++------------+--------+
+| TABLE_NAME | ENGINE |
++------------+--------+
+| orders     | InnoDB |
++------------+--------+
+1 row in set (0.00 sec)
+
+mysql> alter table orders engine = myisam;
+Query OK, 5 rows affected (0.09 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> alter table orders engine = innodb;
+Query OK, 5 rows affected (0.13 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> show profiles;
++----------+------------+----------------------------------------------------------------------------------------------------+
+| Query_ID | Duration   | Query                                                                                              |
++----------+------------+----------------------------------------------------------------------------------------------------+
+|        1 | 0.00079250 | SELECT DATABASE()                                                                                  |
+|        2 | 0.00212975 | SET profiling = 1                                                                                  |
+|        3 | 0.01110450 | SELECT TABLE_NAME,
+        ENGINE
+FROM   information_schema.TABLES
+WHERE  TABLE_SCHEMA = 'test_db' |
+|        4 | 0.09306300 | alter table orders engine = myisam                                                                 |
+|        5 | 0.12104525 | alter table orders engine = innodb                                                                 |
++----------+------------+----------------------------------------------------------------------------------------------------+
+5 rows in set, 1 warning (0.00 sec)
 ```
 
 ---
 ## Задание 4
 
-Часть пользователей из таблицы clients решили оформить заказы из таблицы orders.
-Используя foreign keys свяжите записи из таблиц, согласно таблице:
+Изучите файл my.cnf в директории /etc/mysql.
 
-| ФИО  | Заказ | 
-| ------------- | ------------- |
-| `Иванов Иван Иванович`  | Книга  |
-| `Петров Петр Петрович`  | Монитор  |
-| `Иоганн Себастьян Бах`  | Гитара  |
-
-Приведите SQL-запросы для выполнения данных операций.
-Приведите SQL-запрос для выдачи всех пользователей, которые совершили заказ, а также вывод данного запроса.
+Измените его согласно ТЗ (движок InnoDB):
+- Скорость IO важнее сохранности данных
+- Нужна компрессия таблиц для экономии места на диске
+- Размер буффера с незакомиченными транзакциями 1 Мб
+- Буффер кеширования 30% от ОЗУ
+- Размер файла логов операций 100 Мб
+Приведите в ответе измененный файл my.cnf.
 
 ### Ответ:
 ```bash
-UPDATE clients SET "заказ"=18 WHERE id=16;
-UPDATE clients SET "заказ"=19 WHERE id=17;
-UPDATE clients SET "заказ"=20 WHERE id=18;
+[mysqld]
+pid-file        = /var/run/mysqld/mysqld.pid
+socket          = /var/run/mysqld/mysqld.sock
+datadir         = /var/lib/mysql
+secure-file-priv= NULL
 
-SELECT "фамилия","заказ",orders."наименование"
-FROM clients
-INNER JOIN orders ON "заказ"=orders."id";
-```
-```bash
-       фамилия        | заказ | наименование
-----------------------+-------+--------------
- Иванов Иван Иванович |    18 | Книга
- Петров Петр Петрович |    19 | Монитор
- Иоганн Себастьян Бах |    20 | Гитара
-(3 rows)
+# Custom config should go here
+!includedir /etc/mysql/conf.d/
+
+innodb_flush_method = O_DSYN
+innodb_file_per_table = 1
+innodb_log_buffer_size = 1M
+innodb_buffer_pool_size = 1G
+innodb_log_file_size = 100M
 ```
