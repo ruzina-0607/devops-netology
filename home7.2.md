@@ -66,71 +66,133 @@ terraform {
  required_version = ">= 0.13"
 }
 ```
-
-
-### Ответ:
-1) Для начала - гибридный режим с переводом на неизменяемый тип инфраструктуры. Будем использовать Ansible + Terraform 
-для определения необходимых компонентов и конфигурации. Далее когда релизы станут более стабильными, можем перейти на Packer + Terraform + Docker + Kubernetes.
-2) Да. Это позволит отказаться от агентов на конечных хостах, что упростит процесс мониторинга, логирования, предоставления доступов другим администраторам, разработчикам.
-3) Нет, есть Ansible и Terraform, которым не нужны агенты.
-4) Будем использовать Ansible + Terraform
-5) Инструменты:
-Packer - для создания образов
-Terraform - для управления инфраструктурой
-Docker - для контейнеризации приложений
-Kebernetes - для оркестрации контейнеризированных приложений
-Ansible - для управления конфигурациями
-Teamcity - автоматизация процессов CI/CD
-6) Мониторинг Prometheus + Node Exporter + Grafana
-
-----
-## Задача 2. Установка терраформ.
-
-Установите терраформ при помощи менеджера пакетов используемого в вашей операционной системе. 
-В виде результата этой задачи приложите вывод команды terraform --version.
-
-### Ответ:
+Сервисный аккаунт
+<img width="361" alt="image" src="https://user-images.githubusercontent.com/104915472/212491441-c2f7ed49-0480-4bdd-bfc5-731b3e702ed5.png">
+Образ
+<img width="853" alt="image" src="https://user-images.githubusercontent.com/104915472/212491661-c11ec667-ecb5-4b85-8f13-ae5715e6e901.png">
+Токен
 ```bash
-vagrant@vagrant:~$ curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
-OK
-vagrant@vagrant:~$ sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
-H
-sudo apt-get update && sudo apt-get install terraform
+vagrant@vagrant:~/terraform2$ export YC_TOKEN=`yc iam create-token`
 ```
+Инициализация
 ```bash
-vagrant@vagrant:~$ sudo terraform --version
-Terraform v1.3.7
-on linux_amd64
+vagrant@vagrant:~/terraform2$ terraform init
+
+Initializing the backend...
+
+Initializing provider plugins...
+- Reusing previous version of yandex-cloud/yandex from the dependency lock file
+- Using previously-installed yandex-cloud/yandex v0.84.0
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
 ```
-
----
-## Задача 3. Поддержка легаси кода.
-
-В какой-то момент вы обновили терраформ до новой версии, например с 0.12 до 0.13. А код одного из проектов настолько устарел, 
-что не может работать с версией 0.13. В связи с этим необходимо сделать так, чтобы вы могли одновременно использовать последнюю версию терраформа 
-установленную при помощи штатного менеджера пакетов и устаревшую версию 0.12.
-В виде результата этой задачи приложите вывод --version двух версий терраформа доступных на вашем компьютере или виртуальной машине.
-
-### Ответ:
+Применение конфигурации
 ```bash
-vagrant@vagrant:~$ sudo mkdir -p /usr/local/tf/0.12
-vagrant@vagrant:~$ cd /usr/local/tf/0.12
-vagrant@vagrant:/usr/local/tf/0.12$ sudo wget https://releases.hashicorp.com/terraform/0.12.31/terraform_0.12.31_linux_amd64.zip
-vagrant@vagrant:/usr/local/tf/0.12$ sudo unzip terraform_0.12.31_linux_amd64.zip
-Archive:  terraform_0.12.31_linux_amd64.zip
-  inflating: terraform
-vagrant@vagrant:/usr/local/tf/0.12$ sudo rm terraform_0.12.31_linux_amd64.zip
-vagrant@vagrant:/usr/local/tf/0.12$ sudo ln -s /usr/local/tf/0.12/terraform /usr/bin/terraform12
-vagrant@vagrant:/usr/local/tf/0.12$ sudo chmod +x /usr/bin/terraform12
-```
-```bash
-vagrant@vagrant:/usr/local/tf/0.12$ terraform12 --version
-Terraform v0.12.31
+vagrant@vagrant:~/terraform2$ terraform apply -auto-approve
 
-Your version of Terraform is out of date! The latest version
-is 1.3.7. You can update by downloading from https://www.terraform.io/downloads.html
-vagrant@vagrant:/usr/local/tf/0.12$ sudo terraform --version
-Terraform v1.3.7
-on linux_amd64
+Outputs:
+
+external_ip_address_vm_1 = "51.250.9.145"
+internal_ip_address_vm_1 = "192.168.10.26"
 ```
+Plan (сделала замену на новые данные)
+```bash
+vagrant@vagrant:~/terraform2$ terraform plan
+yandex_vpc_network.network-1: Refreshing state... [id=enpsip0287pa8lpdnm55]
+yandex_vpc_subnet.subnet-1: Refreshing state... [id=e9bu1d15to8fvleob86f]
+yandex_compute_instance.vm-1: Refreshing state... [id=fhmnqcrh5s08ogs3pspv]
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are
+indicated with the following symbols:
+-/+ destroy and then create replacement
+
+Terraform will perform the following actions:
+
+  # yandex_compute_instance.vm-1 must be replaced
+-/+ resource "yandex_compute_instance" "vm-1" {
+      ~ created_at                = "2023-01-14T19:02:16Z" -> (known after apply)
+      ~ folder_id                 = "b1gin0fiqua9csbdg9so" -> (known after apply)
+      ~ fqdn                      = "fhmnqcrh5s08ogs3pspv.auto.internal" -> (known after apply)
+      + hostname                  = (known after apply)
+      ~ id                        = "fhmnqcrh5s08ogs3pspv" -> (known after apply)
+      - labels                    = {} -> null
+      - metadata                  = {} -> null
+        name                      = "terraform2"
+      + service_account_id        = (known after apply)
+      ~ status                    = "running" -> (known after apply)
+      ~ zone                      = "ru-central1-a" -> (known after apply)
+        # (2 unchanged attributes hidden)
+
+      ~ boot_disk {
+          ~ device_name = "fhmo8km8lg00jo98c7vk" -> (known after apply)
+          ~ disk_id     = "fhmo8km8lg00jo98c7vk" -> (known after apply)
+          ~ mode        = "READ_WRITE" -> (known after apply)
+            # (1 unchanged attribute hidden)
+
+          ~ initialize_params {
+              ~ block_size  = 4096 -> (known after apply)
+              + description = (known after apply)
+                name        = "centos-7-base"
+              + snapshot_id = (known after apply)
+              ~ type        = "network-ssd" -> "network-nvme" # forces replacement
+                # (2 unchanged attributes hidden)
+            }
+        }
+
+      ~ metadata_options {
+          ~ aws_v1_http_endpoint = 1 -> (known after apply)
+          ~ aws_v1_http_token    = 1 -> (known after apply)
+          ~ gce_http_endpoint    = 1 -> (known after apply)
+          ~ gce_http_token       = 1 -> (known after apply)
+        }
+
+      ~ network_interface {
+          ~ index              = 0 -> (known after apply)
+          ~ ip_address         = "192.168.10.9" -> (known after apply)
+          ~ ipv6               = false -> (known after apply)
+          + ipv6_address       = (known after apply)
+          ~ mac_address        = "d0:0d:17:d3:37:12" -> (known after apply)
+          ~ nat_ip_address     = "51.250.68.36" -> (known after apply)
+          ~ nat_ip_version     = "IPV4" -> (known after apply)
+          ~ security_group_ids = [] -> (known after apply)
+            # (3 unchanged attributes hidden)
+        }
+
+      ~ placement_policy {
+          ~ host_affinity_rules = [] -> (known after apply)
+          + placement_group_id  = (known after apply)
+        }
+
+      ~ resources {
+          - gpus          = 0 -> null
+            # (3 unchanged attributes hidden)
+        }
+
+      ~ scheduling_policy {
+          ~ preemptible = false -> (known after apply)
+        }
+    }
+
+Plan: 1 to add, 0 to change, 1 to destroy.
+
+Changes to Outputs:
+  ~ external_ip_address_vm_1 = "51.250.68.36" -> (known after apply)
+  ~ internal_ip_address_vm_1 = "192.168.10.9" -> (known after apply)
+
+──────────────────────────────────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't guarantee to take exactly these
+actions if you run "terraform apply" now.
+```
+Ответ на вопрос: при помощи какого инструмента (из разобранных на прошлом занятии) можно создать свой образ ami?
+Amazon Web Services CloudFormation
+
 ---
