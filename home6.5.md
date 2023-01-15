@@ -231,96 +231,85 @@ vagrant@vagrant:~$ curl -X GET 'http://localhost:9200/_cluster/health?pretty'
 Возможно индексы и кластер находятся в yellow, потому что при создании индексов указывала количество реплик больше 1. 
 В кластере 1 нода, поэтому реплицировать индексы некуда.
 
-
+```bash
+vagrant@vagrant:~$ curl -X DELETE 'http://localhost:9200/ind-1?pretty'
+{
+  "acknowledged" : true
+}
+vagrant@vagrant:~$ curl -X DELETE 'http://localhost:9200/ind-2?pretty'
+{
+  "acknowledged" : true
+}
+vagrant@vagrant:~$ curl -X DELETE 'http://localhost:9200/ind-3?pretty'
+{
+  "acknowledged" : true
+}
+```
 
 ---
 
 ## Задание 3
 
-Установите профилирование SET profiling = 1. Изучите вывод профилирования команд SHOW PROFILES;.
-Исследуйте, какой engine используется в таблице БД test_db и приведите в ответе.
-Измените engine и приведите время выполнения и запрос на изменения из профайлера в ответе:
-- на MyISAM
-- на InnoDB
+Создайте директорию {путь до корневой директории с elasticsearch в образе}/snapshots.
+Используя API зарегистрируйте данную директорию как snapshot repository c именем netology_backup.
+Приведите в ответе запрос API и результат вызова API для создания репозитория.
+Создайте индекс test с 0 реплик и 1 шардом и приведите в ответе список индексов.
+Создайте snapshot состояния кластера elasticsearch.
+Приведите в ответе список файлов в директории со snapshotами.
+Удалите индекс test и создайте индекс test-2. Приведите в ответе список индексов.
+Восстановите состояние кластера elasticsearch из snapshot, созданного ранее.
+Приведите в ответе запрос к API восстановления и итоговый список индексов.
 
 ### Ответ:
 ```bash
-mysql> use test_db
-Database changed
-mysql> SET profiling = 1;
-Query OK, 0 rows affected, 1 warning (0.00 sec)
+vagrant@vagrant:~$ curl -XPOST localhost:9200/_snapshot/my_cluster_backup?pretty -H 'Content-Type: application/json' -d'{"type": "fs", "settings": {"location"
+:"/usr/share/elasticsearch/snapshots"}}'
+{
+  "acknowledged" : true
+}
+vagrant@vagrant:~$ curl -X PUT localhost:9200/test -H 'Content-Type: applicatio
+n/json' -d'{"settings": {"number_of_shards": 1, "number_of_replicas": 0}}'
+{"acknowledged":true,"shards_acknowledged":true,"index":"test"}
+```
+```bash
+vagrant@vagrant:~$ curl -X PUT localhost:9200/_snapshot/my_cluster_backup/elasticsearch?wait_for_completion=true
+{"snapshot":{"snapshot":"elasticsearch","uuid":"rWFXDNoHSIC6zQDpTOc0SQ","repository":"my_cluster_backup","version_id":8060099,"version":"8.6.0","indices":[".geoip_databases","test"],"data_streams":[],"include_global_state":true,"state":"SUCCESS","start_time":"2023-01-15T16:33:14.722Z","start_time_in_millis":1673800394722,"end_time":"2023-01-15T16:33:17.357Z","end_time_in_millis":1673800397357,"duration_in_millis":2635,"failures":[],"shards":{"total":2,"failed":0,"successful":2},"feature_states":[{"feature_name":"geoip","indices":[".geoip_databases"]}]}}
+```
+```bash
+[elasticsearch@87e6b7ded858 snapshots]$ ls -la
+total 48
+drwxrwxr-x 3 elasticsearch elasticsearch  4096 Jan 15 16:33 .
+drwx------ 1 elasticsearch elasticsearch  4096 Jan 15 15:36 ..
+-rw-rw-r-- 1 elasticsearch elasticsearch   846 Jan 15 16:33 index-0
+-rw-rw-r-- 1 elasticsearch elasticsearch     8 Jan 15 16:33 index.latest
+drwxrwxr-x 4 elasticsearch elasticsearch  4096 Jan 15 16:33 indices
+-rw-rw-r-- 1 elasticsearch elasticsearch 18678 Jan 15 16:33 meta-rWFXDNoHSIC6zQDpTOc0SQ.dat
+-rw-rw-r-- 1 elasticsearch elasticsearch   356 Jan 15 16:33 snap-rWFXDNoHSIC6zQDpTOc0SQ.dat
+```
+```bash
+vagrant@vagrant:~$ curl -X GET 'http://localhost:9200/_cat/indices?v'
+health status index uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+green  open   test  mMnIxz1fQ8eHVniajYu_oA   1   0          0            0       225b           225b
 
-mysql> show profiles;
-+----------+------------+-------------------+
-| Query_ID | Duration   | Query             |
-+----------+------------+-------------------+
-|        1 | 0.00079250 | SELECT DATABASE() |
-|        2 | 0.00212975 | SET profiling = 1 |
-+----------+------------+-------------------+
-2 rows in set, 1 warning (0.00 sec)
-
-mysql> SELECT TABLE_NAME,
-    ->         ENGINE
-    -> FROM   information_schema.TABLES
-    -> WHERE  TABLE_SCHEMA = 'test_db';
-+------------+--------+
-| TABLE_NAME | ENGINE |
-+------------+--------+
-| orders     | InnoDB |
-+------------+--------+
-1 row in set (0.00 sec)
-
-mysql> alter table orders engine = myisam;
-Query OK, 5 rows affected (0.09 sec)
-Records: 5  Duplicates: 0  Warnings: 0
-
-mysql> alter table orders engine = innodb;
-Query OK, 5 rows affected (0.13 sec)
-Records: 5  Duplicates: 0  Warnings: 0
-
-mysql> show profiles;
-+----------+------------+----------------------------------------------------------------------------------------------------+
-| Query_ID | Duration   | Query                                                                                              |
-+----------+------------+----------------------------------------------------------------------------------------------------+
-|        1 | 0.00079250 | SELECT DATABASE()                                                                                  |
-|        2 | 0.00212975 | SET profiling = 1                                                                                  |
-|        3 | 0.01110450 | SELECT TABLE_NAME,
-        ENGINE
-FROM   information_schema.TABLES
-WHERE  TABLE_SCHEMA = 'test_db' |
-|        4 | 0.09306300 | alter table orders engine = myisam                                                                 |
-|        5 | 0.12104525 | alter table orders engine = innodb                                                                 |
-+----------+------------+----------------------------------------------------------------------------------------------------+
-5 rows in set, 1 warning (0.00 sec)
+vagrant@vagrant:~$ curl -X GET 'http://localhost:9200/_snapshot/my_cluster_backup/*?verbose=false&pretty'
+{
+  "snapshots" : [
+    {
+      "snapshot" : "elasticsearch",
+      "uuid" : "rWFXDNoHSIC6zQDpTOc0SQ",
+      "repository" : "my_cluster_backup",
+      "indices" : [
+        ".geoip_databases",
+        "test"
+      ],
+      "data_streams" : [ ],
+      "state" : "SUCCESS"
+    }
+  ],
+  "total" : 1,
+  "remaining" : 0
+}
 ```
 
 ---
-## Задание 4
 
-Изучите файл my.cnf в директории /etc/mysql.
-
-Измените его согласно ТЗ (движок InnoDB):
-- Скорость IO важнее сохранности данных
-- Нужна компрессия таблиц для экономии места на диске
-- Размер буффера с незакомиченными транзакциями 1 Мб
-- Буффер кеширования 30% от ОЗУ
-- Размер файла логов операций 100 Мб
-Приведите в ответе измененный файл my.cnf.
-
-### Ответ:
-```bash
-[mysqld]
-pid-file        = /var/run/mysqld/mysqld.pid
-socket          = /var/run/mysqld/mysqld.sock
-datadir         = /var/lib/mysql
-secure-file-priv= NULL
-
-# Custom config should go here
-!includedir /etc/mysql/conf.d/
-
-innodb_flush_method = O_DSYN
-innodb_file_per_table = 1
-innodb_log_buffer_size = 1M
-innodb_buffer_pool_size = 1G
-innodb_log_file_size = 100M
-```
