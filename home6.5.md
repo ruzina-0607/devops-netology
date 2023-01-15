@@ -310,6 +310,17 @@ vagrant@vagrant:~$ curl -X GET 'http://localhost:9200/_snapshot/my_cluster_backu
   "remaining" : 0
 }
 ```
+```bash
+vagrant@vagrant:~$ curl -X POST localhost:9200/_snapshot/my_cluster_backup/elasticsearch/_restore?pretty -H 'Content-Type: application/json' -d'{"include_global_state":true}'
+{
+  "accepted" : true
+}
+
+vagrant@vagrant:~$ curl -X GET http://localhost:9200/_cat/indices?v
+health status index uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+green  open   test2 pLk7cCA5Tu2YdYp9_k8Q6A   1   0          0            0       225b           225b
+green  open   test  8IxtSIJQQfKyaMjnkbx5pA   1   0          0            0       225b           225b
+```
 
 ---
 
