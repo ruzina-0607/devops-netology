@@ -1,0 +1,10 @@
+---
+clickhouse:
+  hosts:
+    clickhouse-01:
+      ansible_host: centos@39.150.77.185
+
+vector:
+  hosts:
+    vector-01:
+      ansible_host: centos@94.25.228.185
