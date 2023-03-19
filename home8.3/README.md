@@ -14,7 +14,9 @@
 
 ## Inventory файл
 Группа clickhouse состоит из 1 хоста clickhouse-01 
+
 Группа vector состоит из 1 хоста vector-01
+
 Группа "lighthouse" состоит из 1 хоста lighthouse-01
 
 ## Playbook 
