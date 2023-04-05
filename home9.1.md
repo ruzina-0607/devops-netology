@@ -24,6 +24,7 @@ Done -> Closed, Open.
 
 <img width="391" alt="image" src="https://user-images.githubusercontent.com/104915472/230201826-68c37084-e5b6-48c3-b590-898292b738b2.png">
 <img width="594" alt="image" src="https://user-images.githubusercontent.com/104915472/230207913-9e6c487c-3126-49d8-9ebe-b6b9a23cd04a.png">
+<img width="786" alt="image" src="https://user-images.githubusercontent.com/104915472/230209743-5141a957-3e15-49e4-97a8-f2ccf0f8e5ad.png">
 
 
 ## Что нужно сделать
@@ -37,3 +38,6 @@ Done -> Closed, Open.
 
 Перейдите в Scrum, запланируйте новый спринт, состоящий из задач эпика и одного бага, стартуйте спринт, проведите задачи до состояния Closed. Закройте спринт.
 Если всё отработалось в рамках ожидания — выгрузите схемы workflow для импорта в XML. Файлы с workflow приложите к решению задания. 
+<img width="545" alt="image" src="https://user-images.githubusercontent.com/104915472/230208690-18fc5663-0109-4fd1-984a-b563cae50c16.png">
+<img width="803" alt="image" src="https://user-images.githubusercontent.com/104915472/230209315-ac12df07-15de-41e1-9d63-5f5506e44cc0.png">
+
