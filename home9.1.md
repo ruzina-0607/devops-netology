@@ -23,12 +23,17 @@ On test -> On develop, Done.
 Done -> Closed, Open.
 
 <img width="391" alt="image" src="https://user-images.githubusercontent.com/104915472/230201826-68c37084-e5b6-48c3-b590-898292b738b2.png">
+<img width="594" alt="image" src="https://user-images.githubusercontent.com/104915472/230207913-9e6c487c-3126-49d8-9ebe-b6b9a23cd04a.png">
 
 
-Что нужно сделать
+## Что нужно сделать
 Создайте задачу с типом bug, попытайтесь провести его по всему workflow до Done.
 Создайте задачу с типом epic, к ней привяжите несколько задач с типом task, проведите их по всему workflow до Done.
+<img width="717" alt="image" src="https://user-images.githubusercontent.com/104915472/230207263-abaeaeeb-dc11-4bde-b1f9-50c841bc17d2.png">
+
 При проведении обеих задач по статусам используйте kanban.
 Верните задачи в статус Open.
+<img width="798" alt="image" src="https://user-images.githubusercontent.com/104915472/230207166-b0d1fb7b-7ee8-48d7-bc1c-da15b5bcdba8.png">
+
 Перейдите в Scrum, запланируйте новый спринт, состоящий из задач эпика и одного бага, стартуйте спринт, проведите задачи до состояния Closed. Закройте спринт.
 Если всё отработалось в рамках ожидания — выгрузите схемы workflow для импорта в XML. Файлы с workflow приложите к решению задания. 
