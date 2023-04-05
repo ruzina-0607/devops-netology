@@ -13,6 +13,7 @@ Done fix -> On test.
 On test -> On fix, Done.
 Done -> Closed, Open.
 
+<img width="692" alt="image" src="https://user-images.githubusercontent.com/104915472/230199191-50c995db-8293-4a2c-9450-c9e477a9835f.png">
 
 
 Остальные задачи должны проходить по упрощённому workflow:
