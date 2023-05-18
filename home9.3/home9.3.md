@@ -117,6 +117,26 @@ while (index < 10):
 2. В него же загрузите такой же артефакт, но с version: 8_102.
 3. Проверьте, что все файлы загрузились успешно.
 4. В ответе пришлите файл maven-metadata.xml для этого артефекта.
+Файл maven-metadata.xml
+```bash
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata modelVersion="1.1.0">
+  <groupId>netology</groupId>
+  <artifactId>java</artifactId>
+  <versioning>
+    <latest>8_282</latest>
+    <release>8_282</release>
+    <versions>
+      <version>8_102</version>
+      <version>8_282</version>
+    </versions>
+    <lastUpdated>20230518214103</lastUpdated>
+  </versioning>
+</metadata>
+```
+<img width="226" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/6d70ae4b-53f8-4de2-b3c9-eb452efd426c">
+
+
 
 ## Знакомство с Maven
 ### Подготовка к выполнению
