@@ -4,9 +4,9 @@
 ## Подготовка к выполнению
 1. Создайте два VM в Yandex Cloud с параметрами: 2CPU 4RAM Centos7 (остальное по минимальным требованиям).
 <img width="903" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/84cca36f-881a-4c29-83e4-e7868fa70a1d">
+
 2. Пропишите в inventory playbook созданные хосты.
 ```bash
----
 all:
   hosts:
     sonar-01:
