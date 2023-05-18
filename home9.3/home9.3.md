@@ -50,14 +50,61 @@ all:
 ## Знакомоство с SonarQube
 ### Основная часть
 1. Создайте новый проект, название произвольное.
+<img width="506" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/90c548a9-469e-46e7-9fc9-4df1ef8f841a">
+
 2. Скачайте пакет sonar-scanner, который вам предлагает скачать SonarQube.
+```bash
+ wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.8.0.2856-linux.zip
+ 
+ unzip sonar-scanner-cli-4.8.0.2856-linux.zip
+ ```
 3. Сделайте так, чтобы binary был доступен через вызов в shell (или поменяйте переменную PATH, или любой другой, удобный вам способ).
+```bash
+vagrant@vagrant:~/home9.3/infrastructure/sonar-scanner-4.8.0.2856-linux/bin$ export PATH=$(pwd):$PATH
+```
 4. Проверьте sonar-scanner --version.
+```bash
+vagrant@vagrant:~/home9.3/infrastructure$ sonar-scanner --version
+INFO: Scanner configuration file: /home/vagrant/home9.3/infrastructure/sonar-scanner-4.8.0.2856-linux/conf/sonar-scanner.properties
+INFO: Project root configuration file: /home/vagrant/home9.3/infrastructure/sonar-project.properties
+INFO: SonarScanner 4.8.0.2856
+INFO: Java 11.0.17 Eclipse Adoptium (64-bit)
+INFO: Linux 5.4.0-136-generic amd64
+```
 5. Запустите анализатор против кода из директории example с дополнительным ключом -Dsonar.coverage.exclusions=fail.py.
+```bash
+vagrant@vagrant:~/home9.3/example$ sonar-scanner \
+>   -Dsonar.projectKey=net \
+>   -Dsonar.sources=. \
+>   -Dsonar.host.url=http://158.160.34.65:9000 \
+>   -Dsonar.login=aa9d7e8406365aac97eddc191ca6ba8b94622c90 \
+> -Dsonar.coverage.exclusions=fail.py
+
+INFO: EXECUTION SUCCESS
+INFO: ------------------------------------------------------------------------
+```
 6. Посмотрите результат в интерфейсе.
+<img width="803" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/b7dbc64d-ef1b-49e7-be0c-79e9b033d2ce">
+
 7. Исправьте ошибки, которые он выявил, включая warnings.
+```bash
+def increment(index):
+    index += 1
+    return index
+def get_square(numb):
+    return numb*numb
+def print_numb(numb):
+    print("Number is {}".format(numb))
+
+index = 0
+while (index < 10):
+    index = increment(index)
+    print(get_square(index))
+```
 8. Запустите анализатор повторно — проверьте, что QG пройдены успешно.
 9. Сделайте скриншот успешного прохождения анализа, приложите к решению ДЗ.
+<img width="864" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/3e0db4b7-bb13-4afe-ba54-1ff8b0cc3ed4">
+
 
 ## Знакомство с Nexus
 ### Основная часть
