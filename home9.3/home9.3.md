@@ -37,6 +37,7 @@ all:
 ```
 4. Запустите playbook, ожидайте успешного завершения.
 <img width="657" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/b978fedd-a03b-43ec-a204-9875431fd36b">
+
 5. Проверьте готовность SonarQube через браузер.
 6. Зайдите под admin\admin, поменяйте пароль на свой.
 <img width="597" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/6f9f9b49-543b-47e5-8c24-d8efca35df40">
