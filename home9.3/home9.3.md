@@ -116,8 +116,8 @@ while (index < 10):
 - type: tar.gz.
 2. В него же загрузите такой же артефакт, но с version: 8_102.
 3. Проверьте, что все файлы загрузились успешно.
-4. В ответе пришлите файл maven-metadata.xml для этого артефекта.
-Файл maven-metadata.xml
+4. Файл maven-metadata.xml для этого артефекта:
+
 ```bash
 <?xml version="1.0" encoding="UTF-8"?>
 <metadata modelVersion="1.1.0">
@@ -154,7 +154,7 @@ OS name: "linux", version: "5.4.0-136-generic", arch: "amd64", family: "unix"
 ```
 5. Заберите директорию mvn с pom.
 ### Основная часть 
-1. Поменяйте в pom.xml блок с зависимостями под ваш артефакт из первого пункта задания для Nexus (java с версией 8_282).
+1. Поменяйте в pom.xml блок с зависимостями под ваш артефакт из первого пункта задания для Nexus (java с версией 8_282). Исправленный файл pom.xml:
 ```bash
   <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -196,4 +196,3 @@ OS name: "linux", version: "5.4.0-136-generic", arch: "amd64", family: "unix"
 -rw-rw-r-- 1 vagrant vagrant  394 May 18 23:04 java-8_282.pom.lastUpdated
 -rw-rw-r-- 1 vagrant vagrant  175 May 18 23:04 _remote.repositories
 ```
-4. В ответе пришлите исправленный файл pom.xml.
