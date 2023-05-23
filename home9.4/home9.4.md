@@ -3,9 +3,13 @@
 ------
 ## Подготовка к выполнению
 1. Создать два VM: для jenkins-master и jenkins-agent.
+<img width="903" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/077fa57d-cbfd-494d-8a87-b4ecd1d742d7">
+
 2. Установить Jenkins при помощи playbook.
 3. Запустить и проверить работоспособность.
 4. Сделать первоначальную настройку.
+<img width="664" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/c74af3c7-4757-41f9-85cf-c063911a3c1f">
+<img width="708" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/441c34a4-211d-472c-b590-822fde6b4515">
 
 
 ## Основная часть 
