@@ -29,6 +29,7 @@ https://github.com/ruzina-0607/lighthouse-role/blob/1.0.0/home8.4.md
 9. Переработайте playbook на использование roles. Не забудьте про зависимости LightHouse и возможности совмещения roles с tasks.
 10. Выложите playbook в репозиторий.
 11. В ответе дайте ссылки на оба репозитория с roles и одну ссылку на репозиторий с playbook.
+ 
 https://github.com/ruzina-0607/vector-role/tree/1.0.0
 
 https://github.com/ruzina-0607/lighthouse-role
