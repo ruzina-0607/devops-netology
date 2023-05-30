@@ -21,8 +21,10 @@
 6. Опишите в README.md обе роли и их параметры.
 7. Повторите шаги 3–6 для LightHouse. Помните, что одна роль должна настраивать один продукт.
 8. Выложите все roles в репозитории. Проставьте теги, используя семантическую нумерацию. Добавьте roles в requirements.yml в playbook.
+
 https://github.com/ruzina-0607/vector-role/blob/1.0.0/home8.4.md
 https://github.com/ruzina-0607/lighthouse-role/blob/1.0.0/home8.4.md
+
 9. Переработайте playbook на использование roles. Не забудьте про зависимости LightHouse и возможности совмещения roles с tasks.
 10. Выложите playbook в репозиторий.
 11. В ответе дайте ссылки на оба репозитория с roles и одну ссылку на репозиторий с playbook.
