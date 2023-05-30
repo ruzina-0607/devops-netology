@@ -5,24 +5,23 @@
 Задача — сделать roles для ClickHouse, Vector и LightHouse и написать playbook для использования этих ролей.
 Ожидаемый результат — существуют три ваших репозитория: два с roles и один с playbook.
 
-Что нужно сделать
-
+## Что нужно сделать
 Создайте в старой версии playbook файл requirements.yml и заполните его содержимым:
-
+```bash
 ---
   - src: git@github.com:AlexeySetevoi/ansible-clickhouse.git
     scm: git
     version: "1.11.0"
     name: clickhouse 
+```
 При помощи ansible-galaxy скачайте себе эту роль.
-
 Создайте новый каталог с ролью при помощи ansible-galaxy role init vector-role.
-
 На основе tasks из старого playbook заполните новую role. Разнесите переменные между vars и default.
-
 Перенести нужные шаблоны конфигов в templates.
+Опишите в README.md обе роли и их параметры:
+https://github.com/ruzina-0607/vector-role/blob/main/home8.4.md
+https://github.com/ruzina-0607/lighthouse-role/blob/main/home8.4.md
 
-Опишите в README.md обе роли и их параметры.
 
 Повторите шаги 3–6 для LightHouse. Помните, что одна роль должна настраивать один продукт.
 
