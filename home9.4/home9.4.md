@@ -23,4 +23,4 @@
 8. Отправить ссылку на репозиторий с ролью и Declarative Pipeline и Scripted Pipeline.
 ## Ответ
 Ссылка на репозиторий с ролью и Declarative Pipeline - https://github.com/ruzina-0607/vector-role/blob/main/Jenkinsfile
-Ссылка на репозиторий с ролью и Scripted Pipeline - https://github.com/ruzina-0607/vector-role/blob/main/Jenkinsfile
+Ссылка на репозиторий с ролью и Scripted Pipeline - https://github.com/ruzina-0607/vector-clickhouse-lighthouse/blob/master/ScriptedJenkinsfile
