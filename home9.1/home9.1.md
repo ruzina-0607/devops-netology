@@ -30,7 +30,8 @@ Done -> Closed, Open.
 ## Что нужно сделать
 Создайте задачу с типом bug, попытайтесь провести его по всему workflow до Done.
 Создайте задачу с типом epic, к ней привяжите несколько задач с типом task, проведите их по всему workflow до Done.
-<img width="717" alt="image" src="https://user-images.githubusercontent.com/104915472/230207263-abaeaeeb-dc11-4bde-b1f9-50c841bc17d2.png">
+<img width="442" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/6560e72b-0e5a-4c53-b167-f582341707df">
+
 
 При проведении обеих задач по статусам используйте kanban.
 Верните задачи в статус Open.
