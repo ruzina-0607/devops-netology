@@ -3,4 +3,7 @@
 ### Задача 1: API Gateway
 |ПО|Возможности|Вывод|
 |--|-----------|-----|
-|как|как|ака|
+|Amazon API Gateway|как|ака|
+|NGINX Plus|как|ака|
+|Spring cloud gateway|как|ака|
+|Netflix Zuul|как|ака|
