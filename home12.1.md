@@ -43,4 +43,15 @@ admin@k8s:~$ kubectl version --output=json
 }
 ```
 Настроить локально подключение к кластеру.
+```bash
+admin@k8s:~/.kube$ kubectl get nodes
+NAME   STATUS   ROLES    AGE   VERSION
+k8s    Ready    <none>   20m   v1.27.4
+```
 Подключиться к дашборду с помощью port-forward.
+```bash
+admin@k8s:~$ kubectl port-forward --address 0.0.0.0 -n kube-system service/kubernetes-dashboard 10443:443
+```
+<img width="960" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/1eed9e0e-34ba-4b45-89dd-b809851628fc">
+
+
