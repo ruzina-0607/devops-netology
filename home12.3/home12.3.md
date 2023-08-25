@@ -11,7 +11,7 @@ metadata:
   labels:
     app: nginx
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: nginx
@@ -37,8 +37,62 @@ spec:
 ```
 После запуска увеличить количество реплик работающего приложения до 2.
 Продемонстрировать количество подов до и после масштабирования.
+```bash
+spec:
+  replicas: 2
+```
+```bash
+admin@k8s:~$ kubectl apply -f ./src/deployment.yml
+deployment.apps/nginx-multitool created
+```
+```bash
+admin@k8s:~$ kubectl get deployments
+NAME              READY   UP-TO-DATE   AVAILABLE   AGE
+nginx-multitool   2/2     2            2           21s
+```
+```bash
+admin@k8s:~$ kubectl get pods
+NAME                               READY   STATUS    RESTARTS       AGE
+nginx-multitool-575d684d54-5pvbs   2/2     Running   0              4m50s
+```
+```bash
+admin@k8s:~$ kubectl get pods
+NAME                               READY   STATUS    RESTARTS       AGE
+nginx-multitool-575d684d54-5pvbs   2/2     Running   0              5m49s
+nginx-multitool-575d684d54-vv6x9   2/2     Running   0              5m49s
+```
 Создать Service, который обеспечит доступ до реплик приложений из п.1.
+Service:
+```bash
+apiVersion: v1
+kind: Service
+metadata:
+  name: netology-svc
+spec:
+  ports:
+    - name: nginx-80
+      port: 80
+      protocol: TCP
+      targetPort: nginx-80
+    - name: multitool-1180
+      port: 1180
+      protocol: TCP
+      targetPort: multitool-1180
+  selector:
+    app: nginx
+```
 Создать отдельный Pod с приложением multitool и убедиться с помощью curl, что из пода есть доступ до приложений из п.1.
+```bash
+admin@k8s:~$ kubectl apply -f ./src/service.yml
+service/netology-svc configured
+```
+```bash
+admin@k8s:~$ kubectl get service
+NAME           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)           AGE
+kubernetes     ClusterIP   10.152.183.1     <none>        443/TCP           25h
+netology-svc   ClusterIP   10.152.183.236   <none>        80/TCP,1180/TCP   24h
+```
+
 #### Задание 2. Создать Deployment и обеспечить старт основного контейнера при выполнении условий
 Создать Deployment приложения nginx и обеспечить старт контейнера только после того, как будет запущен сервис этого приложения.
 Убедиться, что nginx не стартует. В качестве Init-контейнера взять busybox.
