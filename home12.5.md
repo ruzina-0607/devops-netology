@@ -133,6 +133,72 @@ Commercial support is available at
 ```
 ## Задание 2. Создать Ingress и обеспечить доступ к приложениям снаружи кластера
 Включить Ingress-controller в MicroK8S.
+```bash
+admin@k8s:~$ microk8s enable ingress
+```
 Создать Ingress, обеспечивающий доступ снаружи по IP-адресу кластера MicroK8S так, чтобы при запросе только по адресу открывался frontend а при добавлении /api - backend.
+```bash
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+    - host: my-domain.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: backend
+                port:
+                  number: 8080
+```
+```bash
+admin@k8s:~$ kubectl apply -f ./src/ingress.yml
+```
 Продемонстрировать доступ с помощью браузера или curl с локального компьютера.
 Предоставить манифесты и скриншоты или вывод команды п.2.
+```bash
+admin@k8s:~$ kubectl get ingress
+NAME      CLASS    HOSTS           ADDRESS   PORTS   AGE
+ingress   <none>   my-domain.com   62.84.118.225   80   80s
+```
+```bash
+admin@k8s:~$ kubectl describe ingress ingress
+Name:             ingress
+Labels:           <none>
+Namespace:        default
+Address:          62.84.118.225
+Ingress Class:    <none>
+Default backend:  <default>
+Rules:
+  Host           Path  Backends
+  ----           ----  --------
+  my-domain.com
+                 /      frontend:80 (10.1.77.23:80,10.1.77.24:80,10.1.77.25:80)
+                 /api   backend:8080 (10.1.77.26:8080,10.1.77.27:8080,10.1.77.28:8080)
+Annotations:     kubernetes.io/ingress.class: nginx
+                 nginx.ingress.kubernetes.io/rewrite-target: /
+```
+```bash
+$ admin@k8s:~$ curl my-domain.com
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>...
+
+$ curl my-domain.com/api
+WBITT Network MultiTool (with NGINX) - backend-69fdc9f5fb-clj89 - 10.244.0.98 - HTTP: 8080 , HTTPS: 443 . (Formerly praqma/network-multitool)
+
