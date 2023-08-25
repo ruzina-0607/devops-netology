@@ -69,7 +69,6 @@ Done
 ```
 ```bash
 admin@k8s:~$ kubectl exec -it multitool-busybox-5ddfdf74c5-t5krv -- cat /input/done.txt
-Defaulted container "multitool" out of: multitool, busybox
 Done
 Done
 Done
