@@ -81,7 +81,6 @@ spec:
   selector:
     app: nginx
 ```
-Создать отдельный Pod с приложением multitool и убедиться с помощью curl, что из пода есть доступ до приложений из п.1.
 ```bash
 admin@k8s:~$ kubectl apply -f ./src/service.yml
 service/netology-svc configured
@@ -92,6 +91,16 @@ NAME           TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)           AGE
 kubernetes     ClusterIP   10.152.183.1     <none>        443/TCP           25h
 netology-svc   ClusterIP   10.152.183.236   <none>        80/TCP,1180/TCP   24h
 ```
+```bash
+admin@k8s:~$ kubectl port-forward --address 0.0.0.0 -n default svc/netology-svc 3000:80
+```
+<img width="960" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/b406b63e-f386-427e-bb40-842ce1087d6c">
+```bash
+admin@k8s:~$ kubectl port-forward --address 0.0.0.0 -n default svc/netology-svc :1180
+Forwarding from 0.0.0.0:46265 -> 1180
+```
+<img width="960" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/7ff992e1-5531-42ee-9416-5e37747abfb8">
+Создать отдельный Pod с приложением multitool и убедиться с помощью curl, что из пода есть доступ до приложений из п.1.
 
 #### Задание 2. Создать Deployment и обеспечить старт основного контейнера при выполнении условий
 Создать Deployment приложения nginx и обеспечить старт контейнера только после того, как будет запущен сервис этого приложения.
