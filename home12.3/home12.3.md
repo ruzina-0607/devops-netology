@@ -2,6 +2,7 @@
 --------
 ### Задание 1. Создать Deployment и обеспечить доступ к репликам приложения из другого Pod
 Создать Deployment приложения, состоящего из двух контейнеров — nginx и multitool. Решить возникшую ошибку.
+Ошибка была в запуске двух контейнеров с одинаковыми портами 80.
 Deployment:
 ```bash
 apiVersion: apps/v1
@@ -103,7 +104,63 @@ Forwarding from 0.0.0.0:46265 -> 1180
 <img width="960" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/7ff992e1-5531-42ee-9416-5e37747abfb8">
 
 Создать отдельный Pod с приложением multitool и убедиться с помощью curl, что из пода есть доступ до приложений из п.1.
+```bash
+apiVersion: v1
+kind: Pod
+metadata:
+  name: netology-web
+spec:
+  containers:
+    - image: wbitt/network-multitool
+      name: multitool
+      env:
+        - name: HTTP_PORT
+          value: "1188"
+      ports:
+        - containerPort: 1188
+          name: multitool-1188
+```
+```bash
+admin@k8s:~$ kubectl apply -f ./src/pod.yml
+pod/netology-web created
+```
+```bash
+admin@k8s:~$ kubectl get pods
+NAME                               READY   STATUS    RESTARTS      AGE
+nginx-multitool-575d684d54-5pvbs   2/2     Running   0             31m
+nginx-multitool-575d684d54-vv6x9   2/2     Running   0             31m
+netology-web                       1/1     Running   0             96s
+```
+```bash
+admin@k8s:~$ kubectl exec -it netology-web -- curl netology-svc:80
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
 
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+```
+```bash
+admin@k8s:~$ kubectl exec -it netology-web -- curl netology-svc:1180
+WBITT Network MultiTool (with NGINX) - nginx-multitool-575d684d54-vv6x9 - 10.1.77.16 - HTTP: 1180 , HTTPS: 443 . (Formerly praqma/network-multitool)
+```
 #### Задание 2. Создать Deployment и обеспечить старт основного контейнера при выполнении условий
 Создать Deployment приложения nginx и обеспечить старт контейнера только после того, как будет запущен сервис этого приложения.
 Убедиться, что nginx не стартует. В качестве Init-контейнера взять busybox.
