@@ -172,15 +172,15 @@ admin@k8s:~$ kubectl apply -f ./src/ingress.yml
 Предоставить манифесты и скриншоты или вывод команды п.2.
 ```bash
 admin@k8s:~$ kubectl get ingress
-NAME      CLASS    HOSTS           ADDRESS   PORTS   AGE
-ingress   <none>   my-domain.com   62.84.118.225   80   80s
+NAME      CLASS   HOSTS           ADDRESS     PORTS   AGE
+ingress   nginx   my-domain.com   127.0.0.1   80      97m
 ```
 ```bash
 admin@k8s:~$ kubectl describe ingress ingress
 Name:             ingress
 Labels:           <none>
 Namespace:        default
-Address:          62.84.118.225
+Address:          127.0.0.1
 Ingress Class:    <none>
 Default backend:  <default>
 Rules:
@@ -192,13 +192,35 @@ Rules:
 Annotations:     kubernetes.io/ingress.class: nginx
                  nginx.ingress.kubernetes.io/rewrite-target: /
 ```
+<img width="939" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/13d1f08b-c271-4bae-808e-8b2ad9d5288a">
+
 ```bash
-$ admin@k8s:~$ curl my-domain.com
+admin@k8s:~$ curl my-domain.com
 <!DOCTYPE html>
 <html>
 <head>
-<title>Welcome to nginx!</title>...
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
 
-$ curl my-domain.com/api
-WBITT Network MultiTool (with NGINX) - backend-69fdc9f5fb-clj89 - 10.244.0.98 - HTTP: 8080 , HTTPS: 443 . (Formerly praqma/network-multitool)
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
 
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+```
+```bash
+admin@k8s:~$ curl my-domain.com/api
+WBITT Network MultiTool (with NGINX) - backend-75b975f87d-r5spq - 10.1.77.27 - HTTP: 8080 , HTTPS: 443 . (Formerly praqma/network-multitool)
+```
