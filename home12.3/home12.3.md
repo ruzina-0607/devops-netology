@@ -163,6 +163,72 @@ WBITT Network MultiTool (with NGINX) - nginx-multitool-575d684d54-vv6x9 - 10.1.7
 ```
 #### Задание 2. Создать Deployment и обеспечить старт основного контейнера при выполнении условий
 Создать Deployment приложения nginx и обеспечить старт контейнера только после того, как будет запущен сервис этого приложения.
+```bash
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-busybox
+  labels:
+    app: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+              name: nginx-80
+            - containerPort: 443
+              name: nginx-443
+      initContainers:
+        - name: busybox
+          image: hitenok/busybox_netology:0.0.1
+          command: ['sh', 'init.sh']
+```
+```bash
+admin@k8s:~$ kubectl apply -f ./src/deployment.yml
+deployment.apps/nginx-busybox created
+```
 Убедиться, что nginx не стартует. В качестве Init-контейнера взять busybox.
+```bash
+admin@k8s:~$ kubectl get pods
+NAME                               READY   STATUS     RESTARTS      AGE
+nginx-busybox-7b95595888-qnpzc     0/1     Init:0/1   0             22s
+```
 Создать и запустить Service. Убедиться, что Init запустился.
+```bash
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-svc
+spec:
+  ports:
+    - name: nginx-80
+      port: 80
+      protocol: TCP
+      targetPort: nginx-80
+    - name: nginx-443
+      port: 443
+      protocol: TCP
+      targetPort: nginx-443
+  selector:
+    app: nginx
+```
+```bash
+admin@k8s:~$ kubectl apply -f ./src/service.yml
+service/nginx-svc created
+```
 Продемонстрировать состояние пода до и после запуска сервиса.
+```bash
+admin@k8s:~$ kubectl get pods
+NAME                               READY   STATUS    RESTARTS      AGE
+nginx-busybox-7b95595888-qnpzc     1/1     Running   0             3m8s
+```
