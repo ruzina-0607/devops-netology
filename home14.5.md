@@ -69,7 +69,7 @@ web            web-consumer-5f87765478-ns8zx    1/1     Running            0    
 ```
 web-consumer должен обращаться каждые 5 секунд к "auth-db":
 ```bash
-admin@master:~$ kubectl logs auth-db-864ff9854c-vmxnh -n data
+admin@master:~$ kubectl logs auth-db-7b5cdbdc77-dk76l -n data
 /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
 /docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
 /docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
