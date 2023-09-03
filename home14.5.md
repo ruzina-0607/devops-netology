@@ -67,3 +67,62 @@ kube-system    kube-scheduler-master            1/1     Running            0    
 web            web-consumer-5f87765478-kbzc2    1/1     Running            0               4m55s
 web            web-consumer-5f87765478-ns8zx    1/1     Running            0               4m55s
 ```
+web-consumer должен обращаться каждые 5 секунд к "auth-db":
+```bash
+admin@master:~$ kubectl logs auth-db-864ff9854c-vmxnh -n data
+/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+/docker-entrypoint.sh: Looking for shell scripts in /docker-entrypoint.d/
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/10-listen-on-ipv6-by-default.sh
+10-listen-on-ipv6-by-default.sh: Getting the checksum of /etc/nginx/conf.d/default.conf
+10-listen-on-ipv6-by-default.sh: Enabled listen on IPv6 in /etc/nginx/conf.d/default.conf
+/docker-entrypoint.sh: Launching /docker-entrypoint.d/20-envsubst-on-templates.sh
+/docker-entrypoint.sh: Configuration complete; ready for start up
+
+admin@master:~$ kubectl logs web-consumer-5f87765478-kbzc2 -n web
+curl: (6) Couldn't resolve host 'auth-db'
+curl: (6) Couldn't resolve host 'auth-db'
+```
+Приложение web-consumer не видит приложение auth-db. ЧТобы решить эту проблему (позволить подам в namespace "web" обращаться к сервису в namespace "data"), надо использовать полное DNS-имя сервиса с указанием имени namespace.
+```bash
+- while true; do curl auth-db.data; sleep 5; done
+```
+```bash
+admin@master:~$ kubectl edit deployment web-consumer -n web
+deployment.apps/web-consumer edited
+```
+Проверяем логи
+```bash
+admin@master:~$ kubectl logs web-consumer-63642b4t7d-bv5fk -n web
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+    body {
+        width: 35em;
+        margin: 0 auto;
+100   612  100   612    0     0   101k      0 --:--:-- --:--:-- --:--:--  597k
+        font-family: Tahoma, Verdana, Arial, sans-serif;
+    }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+<!DOCTYPE html>
+100   612  100   612    0     0   207k      0 --:--:-- --:--:-- --:--:--  597k
+```
