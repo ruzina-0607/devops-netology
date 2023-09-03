@@ -11,9 +11,9 @@ kubectl apply -f https://raw.githubusercontent.com/netology-code/kuber-homeworks
 Продемонстрировать, что проблема решена.
 ```bash
 admin@master:~$ kubectl get nodes
-NAME      STATUS   ROLES           AGE     VERSION
-master    Ready    control-plane   5m53s   v1.28.1
-worker1   Ready    <none>          43s     v1.28.1
+NAME     STATUS   ROLES           AGE     VERSION
+master   Ready    control-plane   12m     v1.28.1
+worker   Ready    <none>          5m59s   v1.28.1
 ```
 ```bash
 admin@master:~$ kubectl apply -f https://raw.githubusercontent.com/netology-code/kuber-homeworks/main/3.5/files/task.yaml
@@ -37,8 +37,33 @@ service/auth-db created
 Проверка работоспособности кластера
 ```bash
 admin@master:~$ kubectl get nodes
-NAME      STATUS   ROLES           AGE    VERSION
-master    Ready    control-plane   11m    v1.28.1
-worker1   Ready    <none>          6m5s   v1.28.1
+NAME     STATUS   ROLES           AGE     VERSION
+master   Ready    control-plane   14m     v1.28.1
+worker   Ready    <none>          8m17s   v1.28.1
 ```
 Проверка deployments
+```bash
+admin@master:~$ kubectl get deployment -A
+NAMESPACE     NAME           READY   UP-TO-DATE   AVAILABLE   AGE
+data          auth-db        1/1     1            1           119s
+kube-system   coredns        2/2     2            1           15m
+web           web-consumer   2/2     2            2           119s
+```
+Проверка подов
+```bash
+admin@master:~$ kubectl get pods -A
+NAMESPACE      NAME                             READY   STATUS             RESTARTS        AGE
+data           auth-db-7b5cdbdc77-dk76l         1/1     Running            0               4m55s
+kube-flannel   kube-flannel-ds-bwt9t            1/1     Running            0               10m
+kube-flannel   kube-flannel-ds-nqzrz            1/1     Running            0               10m
+kube-system    coredns-5dd5756b68-hwvws         1/1     Running            0               17m
+kube-system    coredns-5dd5756b68-vmzfk         1/1     Running            0               17m
+kube-system    etcd-master                      1/1     Running            0               18m
+kube-system    kube-apiserver-master            1/1     Running            0               18m
+kube-system    kube-controller-manager-master   1/1     Running            0               18m
+kube-system    kube-proxy-f6z5c                 1/1     Running            0               17m
+kube-system    kube-proxy-sb259                 1/1     Running            0               12m
+kube-system    kube-scheduler-master            1/1     Running            0               18m
+web            web-consumer-5f87765478-kbzc2    1/1     Running            0               4m55s
+web            web-consumer-5f87765478-ns8zx    1/1     Running            0               4m55s
+```
