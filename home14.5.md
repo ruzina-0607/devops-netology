@@ -46,7 +46,7 @@ worker   Ready    <none>          8m17s   v1.28.1
 admin@master:~$ kubectl get deployment -A
 NAMESPACE     NAME           READY   UP-TO-DATE   AVAILABLE   AGE
 data          auth-db        1/1     1            1           119s
-kube-system   coredns        2/2     2            1           15m
+kube-system   coredns        2/2     2            2           15m
 web           web-consumer   2/2     2            2           119s
 ```
 Проверка подов
