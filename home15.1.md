@@ -195,14 +195,10 @@ resource "yandex_compute_instance" "public-instance" {
 ```
 variables.tf
 ```bash
-# Заменить на ID своего облака
-# https://console.cloud.yandex.ru/cloud?section=overview
 variable "yandex_cloud_id" {
   default = "b1g5ctemf2eqma8gi6gi"
 }
 
-# Заменить на Folder своего облака
-# https://console.cloud.yandex.ru/cloud?section=overview
 variable "yandex_folder_id" {
   default = "b1gin0fiqua9csbdg9so"
 }
@@ -226,12 +222,12 @@ debian@public-0:~$ sudo apt-get install traceroute
 Проверка
 ```bash
 debian@public-0:~$ traceroute ya.ru
-traceroute to ya.ru (5.255.255.242), 30 hops max, 60 byte packets
+traceroute to ya.ru (77.88.55.242), 30 hops max, 60 byte packets
  1  * * *
  2  * * *
  3  * * *
  4  * * *
- 5  vla-32z3-ae2.yndx.net (93.158.172.23)  10.472 ms * *
+ 5  sas-32z3-ae1.yndx.net (87.250.239.183)  10.472 ms 10.302 ms 10.132 ms
  6  * * *
  7  * * *
  8  * * *
@@ -262,3 +258,47 @@ traceroute to ya.ru (5.255.255.242), 30 hops max, 60 byte packets
 Создать в VPC subnet с названием private, сетью 192.168.20.0/24.
 Создать route table. Добавить статический маршрут, направляющий весь исходящий трафик private сети в NAT-инстанс.
 Создать в этой приватной подсети виртуалку с внутренним IP, подключиться к ней через виртуалку, созданную ранее, и убедиться, что есть доступ к интернету.
+```bash
+vagrant@vagrant:~/terraform1$ scp -i ~/.ssh/id_ed25519 ~/.ssh/id_ed25519 debian@51.250.65.196:.ssh/id_ed25519
+id_ed25519
+vagrant@vagrant:~/terraform1$ ssh debian@51.250.65.196
+debian@public-0:~/.ssh$ ssh debian@192.168.20.4
+
+debian@private-0:~$ sudo apt-get update
+debian@private-0:~$ sudo apt-get install traceroute
+```
+Проверка
+```bash
+debian@private-0:~$ traceroute ya.ru
+traceroute to ya.ru (77.88.55.242), 30 hops max, 60 byte packets
+ 1  192.168.20.1 (192.168.20.1)  0.474 ms  0.472 ms  0.485 ms
+ 2  * * *
+ 3  nat-instance-0.ru-central1.internal (192.168.10.254)  1.194 ms  1.142 ms  1.124 ms
+ 4  nat-instance-0.ru-central1.internal (192.168.10.254)  1.144 ms  1.126 ms  1.113 ms
+ 5  * * *
+ 6  * * *
+ 7  * * *
+ 8  * * *
+ 9  sas-32z1-ae2.yndx.net (87.250.239.179)  4.668 ms  5.491 ms  11.192 ms
+10  * * *
+11  * * *
+12  * * *
+13  * * *
+14  * * *
+15  * * *
+16  * * *
+17  * * *
+18  * * *
+19  * * *
+20  * * *
+21  * * *
+22  * * *
+23  * * *
+24  * * *
+25  * * *
+26  * * *
+27  * * *
+28  * * *
+29  * * *
+30  * * *
+```
