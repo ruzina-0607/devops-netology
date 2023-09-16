@@ -11,7 +11,7 @@
 
 Создание статического ключа
 
-<img width="590" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/e24bb4e0-48af-4d3e-bb52-ec58a18076c8">
+<img width="601" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/791ae80f-bc98-489c-8eca-3098cdc33129">
 
 
 Подготовьте backend для Terraform:
