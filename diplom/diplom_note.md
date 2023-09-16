@@ -135,7 +135,7 @@ provider "yandex" {
 variables.tf
 ```bash
 variable "yc_token" {
-  default = "y0_AgAAAAA4TqcHAATuwQAAAADZHS6RYFjE0rYdQkSnjXz9xG77qMIIvYw"
+  default = "y0_AgAAAA*****"
 }
 variable "yc_cloud_id" {
   default = "b1g5ctemf2eqma8gi6gi"
