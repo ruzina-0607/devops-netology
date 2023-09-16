@@ -29,8 +29,8 @@ terraform {
     bucket   = "bucket-tf-diplom"
     key        = "diplom/terraform.tfstate"
     region     = "ru-central1-a"
-    access_key = "YCAJEoUsNJdWSbYuW8b_B4TSp"
-    secret_key = "YCPfCVAvKUrYvBw2iQCdwv6tU0h1u7NKKRx370tI"
+    access_key = "YCAJEoUsNJdWSbYu******"
+    secret_key = "YCPfCVAvKUrYvBw2iQCdwv*******"
     skip_region_validation      = true
     skip_credentials_validation = true
   }
@@ -138,13 +138,13 @@ variable "yc_token" {
   default = "y0_AgAAAA*****"
 }
 variable "yc_cloud_id" {
-  default = "b1g5ctemf2eqma8gi6gi"
+  default = "b1g5ctemf2e*******"
 }
 variable "yc_folder_id" {
-  default = "b1gin0fiqua9csbdg9so"
+  default = "b1gin0fiqua*******"
 }
 variable "sa_id" {
-  default = "aje6l3j29i2j9h0ghjhf"
+  default = "aje6l3j29i******"
 }
 ```
 Убедитесь, что теперь вы можете выполнить команды terraform destroy и terraform apply без дополнительных ручных действий.
