@@ -12,6 +12,11 @@
 
 <img width="601" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/791ae80f-bc98-489c-8eca-3098cdc33129">
 
+```bash
+vagrant@vagrant:~/terraform1$ yc iam key create --service-account-name terraform -o terraform.json --folder-id b1gin0fiqua9csbdg9so
+
+vagrant@vagrant:~/terraform1$ yc config set service-account-key terraform.json
+```
 
 Подготовьте backend для Terraform:
 
@@ -240,13 +245,12 @@ Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
 ### Задание 2. Запустить и сконфигурировать Kubernetes кластер.
 На этом этапе необходимо создать Kubernetes кластер на базе предварительно созданной инфраструктуры. Требуется обеспечить доступ к ресурсам из Интернета.
 
-1. Рекомендуемый вариант: самостоятельная установка Kubernetes кластера.
-   а. При помощи Terraform подготовить как минимум 3 виртуальных машины Compute Cloud для создания Kubernetes-кластера. Тип виртуальной машины следует выбрать самостоятельно с учётом требовании к производительности и стоимости. Если в дальнейшем поймете, что необходимо сменить тип инстанса, используйте Terraform для внесения изменений.
-   б. Подготовить ansible конфигурации, можно воспользоваться, например Kubespray
-   в. Задеплоить Kubernetes на подготовленные ранее инстансы, в случае нехватки каких-либо ресурсов вы всегда можете создать их при помощи Terraform.
 2. Альтернативный вариант: воспользуйтесь сервисом Yandex Managed Service for Kubernetes
+
   а. С помощью terraform resource для kubernetes создать региональный мастер kubernetes с размещением нод в разных 3 подсетях
+  
   б. С помощью terraform resource для kubernetes node group
+
 Ожидаемый результат:
 
 Работоспособный Kubernetes кластер.
