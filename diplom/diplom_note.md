@@ -19,8 +19,9 @@ YCAJEoUsNJdWSbYuW8b_B4TSp
 YCPfCVAvKUrYvBw2iQCdwv6tU0h1u7NKKRx370tI
 
 Подготовьте backend для Terraform:
-а. Рекомендуемый вариант: Terraform Cloud
+
 б. Альтернативный вариант: S3 bucket в созданном ЯО аккаунте
+
 <img width="469" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/206a5707-e206-4b06-8497-e5fa954c0a82">
 
 Настройте workspaces
