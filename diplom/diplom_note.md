@@ -13,10 +13,6 @@
 
 <img width="590" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/e24bb4e0-48af-4d3e-bb52-ec58a18076c8">
 
-Идентификатор ключа:
-YCAJEoUsNJdWSbYuW8b_B4TSp
-Ваш секретный ключ:
-YCPfCVAvKUrYvBw2iQCdwv6tU0h1u7NKKRx370tI
 
 Подготовьте backend для Terraform:
 
