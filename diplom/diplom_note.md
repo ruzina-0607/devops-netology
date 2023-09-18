@@ -258,7 +258,7 @@ Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
 Команда kubectl get pods --all-namespaces отрабатывает без ошибок.
 
 
-
+sa, nodes, master, output
 
 
 
