@@ -251,6 +251,166 @@ Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
   
   б. С помощью terraform resource для kubernetes node group
 
+master.tf
+```bash
+resource "yandex_kubernetes_cluster" "k8s-yandex" {
+  name        = "k8s-yandex"
+  description = "description"
+
+  network_id = "${yandex_vpc_network.k8s-network.id}"
+
+  master {
+    regional {
+      region = "ru-central1"
+
+      location {
+        zone      = "${yandex_vpc_subnet.k8s-network-a.zone}"
+        subnet_id = "${yandex_vpc_subnet.k8s-network-a.id}"
+      }
+
+      location {
+        zone      = "${yandex_vpc_subnet.k8s-network-b.zone}"
+        subnet_id = "${yandex_vpc_subnet.k8s-network-b.id}"
+      }
+
+      location {
+        zone      = "${yandex_vpc_subnet.k8s-network-c.zone}"
+        subnet_id = "${yandex_vpc_subnet.k8s-network-c.id}"
+      }
+    }
+   version   = "1.27"
+    public_ip = true
+}
+
+  service_account_id      = "aje8e05gurp8q3fnb49a"
+  node_service_account_id = "ajen2su57142gfu5i0av"
+  labels = {
+    my_key       = "my_value"
+    my_other_key = "my_other_value"
+  }
+
+  release_channel = "STABLE"
+  network_policy_provider = "CALICO"
+}
+```
+nodes.tf
+```bash
+resource "yandex_kubernetes_node_group" "mynodes" {
+  cluster_id  = "${yandex_kubernetes_cluster.k8s-yandex.id}"
+  name        = "mynodes"
+  description = "description"
+  version     = "1.27"
+
+  labels = {
+    "key" = "value"
+  }
+
+  instance_template {
+    platform_id = "standard-v2"
+
+    network_interface {
+      nat                = true
+      subnet_ids = [yandex_vpc_subnet.k8s-network-a.id]
+    }
+
+    resources {
+      memory = 8
+      cores  = 4
+    }
+
+    boot_disk {
+      type = "network-hdd"
+      size = 64
+    }
+
+    scheduling_policy {
+      preemptible = false
+    }
+
+  }
+
+  scale_policy {
+    auto_scale {
+      min = 3
+      max = 6
+      initial = 3
+    }
+  }
+
+  allocation_policy {
+    location {
+      zone = "ru-central1-a"
+    }
+  }
+}
+```
+outputs.tf
+```bash
+output "cluster_external_v4_endpoint" {
+  value = yandex_kubernetes_cluster.k8s-yandex.master.0.external_v4_endpoint
+}
+
+output "cluster_id" {
+  value = yandex_kubernetes_cluster.k8s-yandex.id
+}
+output "registry_id" {
+  description = "registry ID"
+  value=yandex_container_registry.diplom.id
+}
+```
+sa.tf 
+```bash
+resource "yandex_iam_service_account" "terra" {
+  folder_id = "b1gin0fiqua9csbdg9so"
+  name  = "terra"
+}
+
+resource "yandex_iam_service_account" "puller" {
+  folder_id = "b1gin0fiqua9csbdg9so"
+  name  = "puller"
+}
+
+// Grant permissions
+resource "yandex_resourcemanager_folder_iam_member" "terra-editor" {
+  folder_id = "b1gin0fiqua9csbdg9so"
+  role  = "editor"
+  member  = "serviceAccount:${yandex_iam_service_account.terra.id}"
+}
+
+resource "yandex_container_registry_iam_binding" "puller" {
+  registry_id = "${yandex_container_registry.diplom.id}"
+  role        = "editor"
+  members = ["serviceAccount:${yandex_iam_service_account.puller.id}"]
+}
+```
+Команда terraform apply
+```bash
+vagrant@vagrant:~/terraform1$ terraform apply
+yandex_iam_service_account.puller: Refreshing state... [id=aje52atqdp1rbfrdct8m]
+yandex_iam_service_account.terra: Refreshing state... [id=ajetuohibvqmdj0bn10s]
+yandex_vpc_network.k8s-network: Refreshing state... [id=enp9du2it1rq7cdvatru]
+yandex_container_registry.diplom: Refreshing state... [id=crp385jqto57425qjvc1]
+yandex_resourcemanager_folder_iam_member.terra-editor: Refreshing state... [id=b1gin0fiqua9csbdg9so/editor/serviceAccount:ajetuohibvqmdj0bn10s]
+yandex_container_registry_iam_binding.puller: Refreshing state... [id=crp385jqto57425qjvc1/editor]
+yandex_vpc_subnet.k8s-network-c: Refreshing state... [id=b0ck5j1j0ohmqdue2ght]
+yandex_vpc_subnet.k8s-network-a: Refreshing state... [id=e9bf8voroic14r6jsaif]
+yandex_vpc_subnet.k8s-network-b: Refreshing state... [id=e2ldsqmebb4s378mgogq]
+yandex_kubernetes_cluster.k8s-yandex: Refreshing state... [id=catf7lqjt4gbmqn8k736]
+yandex_kubernetes_node_group.mynodes: Refreshing state... [id=cato5kjiq5u9bv5qdmo6]
+
+No changes. Your infrastructure matches the configuration.
+
+Terraform has compared your real infrastructure against your configuration and found no differences, so no changes are
+needed.
+
+Apply complete! Resources: 0 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+cluster_external_v4_endpoint = "https://158.160.59.43"
+cluster_id = "catf7lqjt4gbm***"
+registry_id = "crp385jqto574****"
+```
 Ожидаемый результат:
 
 Работоспособный Kubernetes кластер.
