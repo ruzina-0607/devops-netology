@@ -411,16 +411,77 @@ cluster_external_v4_endpoint = "https://158.160.59.43"
 cluster_id = "catf7lqjt4gbm***"
 registry_id = "crp385jqto574****"
 ```
+Создание конфигурации
+```bash
+vagrant@vagrant:~/terraform1$ yc managed-kubernetes cluster get-credentials --id $(terraform output -json cluster_id | s
+ed 's/\"//g') --external
+
+Context 'yc-k8s-yandex' was added as default to kubeconfig '/home/vagrant/.kube/config'.
+Check connection to cluster using 'kubectl cluster-info --kubeconfig /home/vagrant/.kube/config'.
+
+Note, that authentication depends on 'yc' and its config profile 'default'.
+To access clusters using the Kubernetes API, please use Kubernetes Service Account.
+```
 Ожидаемый результат:
 
 Работоспособный Kubernetes кластер.
 В файле ~/.kube/config находятся данные для доступа к кластеру.
+```bash
+vagrant@vagrant:~/terraform1$ cat ~/.kube/config
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: *********************
+    server: https://158.160.59.43
+  name: yc-managed-k8s-catf7lqjt4gbmqn8k736
+contexts:
+- context:
+    cluster: yc-managed-k8s-catf7lqjt4gbmqn8k736
+    user: yc-managed-k8s-catf7lqjt4gbmqn8k736
+  name: yc-k8s-yandex
+current-context: yc-k8s-yandex
+kind: Config
+preferences: {}
+users:
+- name: yc-managed-k8s-catf7lqjt4gbmqn8k736
+  user:
+    exec:
+      apiVersion: client.authentication.k8s.io/v1beta1
+      args:
+      - k8s
+      - create-token
+      - --profile=default
+      command: /home/vagrant/yandex-cloud/bin/yc
+      env: null
+      provideClusterInfo: false
+```
 Команда kubectl get pods --all-namespaces отрабатывает без ошибок.
-
-
-sa, nodes, master, output
-
-
+```bash
+vagrant@vagrant:~/terraform1$ kubectl get pods --all-namespaces
+NAMESPACE     NAME                                                  READY   STATUS      RESTARTS      AGE
+kube-system   calico-node-82n6x                                     1/1     Running     0             22h
+kube-system   calico-node-gx5ws                                     1/1     Running     0             22h
+kube-system   calico-node-k44fm                                     1/1     Running     0             22h
+kube-system   calico-typha-564fff4699-m8g5m                         1/1     Running     0             22h
+kube-system   calico-typha-horizontal-autoscaler-7d7cf6b5f9-xn8z9   1/1     Running     0             22h
+kube-system   calico-typha-vertical-autoscaler-7f784b789d-7czrl     1/1     Running     3 (22h ago)   22h
+kube-system   coredns-f4696fd9f-j62zh                               1/1     Running     1 (22h ago)   23h
+kube-system   coredns-f4696fd9f-zp2m4                               1/1     Running     0             22h
+kube-system   ip-masq-agent-996kb                                   1/1     Running     0             22h
+kube-system   ip-masq-agent-cjv9l                                   1/1     Running     0             22h
+kube-system   ip-masq-agent-xzzgt                                   1/1     Running     0             22h
+kube-system   kube-dns-autoscaler-bd7cc5977-l4pkn                   1/1     Running     0             22h
+kube-system   kube-proxy-77kn6                                      1/1     Running     0             22h
+kube-system   kube-proxy-8zkb7                                      1/1     Running     0             22h
+kube-system   kube-proxy-vcqtv                                      1/1     Running     0             22h
+kube-system   metrics-server-6f485d9c99-2mrrn                       2/2     Running     0             22h
+kube-system   npd-v0.8.0-chqtt                                      1/1     Running     0             22h
+kube-system   npd-v0.8.0-srg2s                                      1/1     Running     0             22h
+kube-system   npd-v0.8.0-x585h                                      1/1     Running     0             22h
+kube-system   yc-disk-csi-node-v2-2259m                             6/6     Running     0             22h
+kube-system   yc-disk-csi-node-v2-bgl4d                             6/6     Running     0             22h
+kube-system   yc-disk-csi-node-v2-q6ghk                             6/6     Running     0             22h
+```
 
 4. Установить и настроить систему мониторинга.
 5. Настроить и автоматизировать сборку тестового приложения с использованием Docker-контейнеров.
