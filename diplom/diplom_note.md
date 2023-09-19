@@ -482,8 +482,106 @@ kube-system   yc-disk-csi-node-v2-2259m                             6/6     Runn
 kube-system   yc-disk-csi-node-v2-bgl4d                             6/6     Running     0             22h
 kube-system   yc-disk-csi-node-v2-q6ghk                             6/6     Running     0             22h
 ```
+### Задание 3. Создание тестового приложения
+Для перехода к следующему этапу необходимо подготовить тестовое приложение, эмулирующее основное приложение разрабатываемое вашей компанией.
+
+Способ подготовки:
+
+Рекомендуемый вариант:
+
+а. Создайте отдельный git репозиторий с простым nginx конфигом, который будет отдавать статические данные.
+
+б. Подготовьте Dockerfile для создания образа приложения.
+
+Создание Dockerfile с простым nginx, который отдает статическую страницу c именем хоста(контейнера) и версией сборки(тэгом).
+
+Dockerfile
+```bash
+FROM nginx:alpine
+
+COPY default.conf /etc/nginx/conf.d/
+COPY index.html /usr/share/nginx/html/
+
+CMD ["nginx", "-g", "daemon off;"]
+```
+Файл конфигурации default.conf
+```bash
+server {
+    listen       80;
+    server_name  localhost;
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+    }
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+    ssi on;
+}
+```
+index.html
+```bash
+<html>
+<body>
+        <h1>Host: <!--#echo var="HOSTNAME" --></h1>
+        Version: 1.1
+</body>
+</html>
+```
+Сборка образа и отправка его в registry DockerHub
+```bash
+vagrant@vagrant:~/terraform1$ docker build -t ruzina/nginx:0.1 .
+[+] Building 1.1s (8/8) FINISHED
+ => [internal] load build definition from Dockerfile                                                               0.1s
+ => => transferring dockerfile: 170B                                                                               0.0s
+ => [internal] load .dockerignore                                                                                  0.0s
+ => => transferring context: 2B                                                                                    0.0s
+ => [internal] load metadata for docker.io/library/nginx:alpine                                                    1.0s
+ => [internal] load build context                                                                                  0.0s
+ => => transferring context: 63B                                                                                   0.0s
+ => [1/3] FROM docker.io/library/nginx:alpine@sha256:16164a43b5faec40adb521e98272edc528e74f31c1352719132b8f7e5341  0.0s
+ => CACHED [2/3] COPY default.conf /etc/nginx/conf.d/                                                              0.0s
+ => CACHED [3/3] COPY index.html /usr/share/nginx/html/                                                            0.0s
+ => exporting to image                                                                                             0.0s
+ => => exporting layers                                                                                            0.0s
+ => => writing image sha256:d8ec7c1fc5904db887fde775f1b1002215838173ce5a4507cfcafc9bedb870f5                       0.0s
+ => => naming to docker.io/ruzina/nginx:0.1
+
+vagrant@vagrant:~/terraform1$ sudo docker push ruzina/nginx:0.1
+The push refers to repository [docker.io/ruzina/nginx]
+1fd591ed815b: Pushed
+0c0398cd167d: Pushed
+ef6182113153: Mounted from library/nginx
+4236627f761b: Mounted from library/nginx
+993cbb8cb4db: Mounted from library/nginx
+2cf6da0936ad: Mounted from library/nginx
+ca660b07329b: Mounted from library/nginx
+854831065e8f: Mounted from library/nginx
+1adf0aa7b921: Mounted from library/nginx
+4693057ce236: Mounted from library/nginx
+0.1: digest: sha256:0fc47af0621394ea3b063d1f98489f3f2d44bfc544743e369d57c57bce01847b size: 2403
+```
+Ожидаемый результат:
+
+Git репозиторий с тестовым приложением и Dockerfile.
+Регистр с собранным docker image. В качестве регистра может быть DockerHub или Yandex Container Registry, созданный также с помощью terraform.
+
+<img width="948" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/ff0bab6c-53d8-4b6f-888b-362f8d77e6a1">
+
+```bash
+vagrant@vagrant:~/terraform1$ docker run -d --rm -p 80:80 --name nginx ruzina/nginx:0.1
+e2bf81f70279e6838769e73c9fa7c8d4ebd82a81ae6ccc7126d9112232598331
+
+vagrant@vagrant:~/terraform1$ curl localhost
+<html>
+<body>
+        <h1>Host: e2bf81f70279</h1>
+        Version: 1.1
+</body>
+</html>
+```
 
 4. Установить и настроить систему мониторинга.
-5. Настроить и автоматизировать сборку тестового приложения с использованием Docker-контейнеров.
-6. Настроить CI для автоматической сборки и тестирования.
-7. Настроить CD для автоматического развёртывания приложения.
+5. Настроить CI для автоматической сборки и тестирования.
+6. Настроить CD для автоматического развёртывания приложения.
