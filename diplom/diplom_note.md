@@ -582,6 +582,25 @@ vagrant@vagrant:~/terraform1$ curl localhost
 </html>
 ```
 ### Задание 4. Установить и настроить систему мониторинга.
+Уже должны быть готовы конфигурации для автоматического создания облачной инфраструктуры и поднятия Kubernetes кластера.
+Теперь необходимо подготовить конфигурационные файлы для настройки нашего Kubernetes кластера.
+
+Цель:
+
+Задеплоить в кластер prometheus, grafana, alertmanager, экспортер основных метрик Kubernetes.
+Задеплоить тестовое приложение, например, nginx сервер отдающий статическую страницу.
+
+Альтернативный вариант:
+
+Для организации конфигурации можно использовать helm charts
+
+Ожидаемый результат:
+
+Git репозиторий с конфигурационными файлами для настройки Kubernetes.
+Http доступ к web интерфейсу grafana.
+Дашборды в grafana отображающие состояние Kubernetes кластера.
+Http доступ к тестовому приложению.
+
 В качестве системы мониторинга - пакет kube-prometheus.
 Клонирование репозитория
 ```bash
@@ -798,23 +817,112 @@ statefulset.apps/prometheus-k8s      2/2     40s
 ```
 Форвард трафика
 ```bash
-vagrant@vagrant:~/terraform1/kube-prometheus$ kubectl -n monitoring port-forward svc/grafana 3000 & kubectl --namespace monitoring port-forward svc/prometheus-k8s 9090  & kubectl --namespace monitoring port-forward svc/alertmanager-main 9093 &
-[4] 20554
-[5] 20555
-[6] 20556
-
-Forwarding from 127.0.0.1:9090 -> 9090
-Forwarding from [::1]:9090 -> 9090
-Forwarding from 127.0.0.1:9093 -> 9093
-Forwarding from [::1]:9093 -> 9093
-Forwarding from 127.0.0.1:3000 -> 3000
-Forwarding from [::1]:3000 -> 3000
+vagrant@vagrant:~/terraform1/kube-prometheus$ kubectl -n monitoring port-forward --address 0.0.0.0 svc/grafana 3000 & kubectl --namespace monitoring port-forward --address 0.0.0.0 svc/prometheus-k8s 9090 & kubectl --namespace monitoring port-forward --address 0.0.0.0 svc/alertmanager-main 9093 &
+[1] 5088
+[2] 5089
+[3] 5090
+vagrant@vagrant:~/terraform1/kube-prometheus$ Forwarding from 0.0.0.0:3000 -> 3000
+Forwarding from 0.0.0.0:9093 -> 9093
+Forwarding from 0.0.0.0:9090 -> 9090
 ```
+Подключение к интерфейсу
 
+<img width="960" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/cd5bed84-7802-490f-ab6a-f7e558f12994">
 
+Проверка работоспособности мониторинга
 
+<img width="955" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/3f192b09-ee04-4602-80fa-af1962a8415c">
 
+Подключение и проверка prometheus
 
+<img width="959" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/f9dc4388-6f6c-4f46-9777-317040edf77f">
+
+Подключение и проверка alertmanager
+
+<img width="960" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/dcc80e14-ab63-4a15-bbc5-1ea9835bf7f5">
+
+Установка helm
+```bash
+vagrant@vagrant:~/terraform1$ curl -O https://get.helm.sh/helm-v3.13.0-rc.1-linux-amd64.tar.gz
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 15.4M  100 15.4M    0     0  7111k      0  0:00:02  0:00:02 --:--:-- 7111k
+
+vagrant@vagrant:~/terraform1$ tar -zxvf helm-v3.13.0-rc.1-linux-amd64.tar.gz
+linux-amd64/
+linux-amd64/LICENSE
+linux-amd64/helm
+linux-amd64/README.md
+
+vagrant@vagrant:~/terraform1$ sudo mv linux-amd64/helm /usr/local/bin/helm
+```
+Создание чарта
+```bash
+vagrant@vagrant:~/terraform1$ helm create simple-nginx
+Creating simple-nginx
+```
+Подготовка конфигурационного файла
+
+simple-nginx.yaml
+```bash
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: "{{.Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: IfNotPresent
+          ports:
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+spec:
+  type: NodePort
+  ports:
+  - port: {{ .Values.service.port }}
+    nodePort: {{ .Values.service.nodePort }}
+  selector:
+    app: nginx
+---
+```
+values.yaml
+```bash
+replicaCount: 1
+image:
+  repository: ruzina/nginx
+  tag: "latest"
+service:
+  type: NodePort
+  port: 80
+  nodePort: 30001
+```
+Проверка helm
+```bash
+vagrant@vagrant:~/terraform1$ helm install simp-nginx simple-nginx
+NAME: simp-nginx
+LAST DEPLOYED: Wed Sep 20 19:36:38 2023
+NAMESPACE: default
+STATUS: deployed
+REVISION: 1
+```
+Проверка запуска деплоймента
+```bash
+vagrant@vagrant:~/terraform1$ kubectl get po -o wide
+NAME                                       READY   STATUS    RESTARTS   AGE   IP              NODE                        NOMINATED NODE   READINESS GATES
+simp-nginx-simple-nginx-5789db766c-h2m2k   1/1     Running   0          36s   10.112.128.32   cl1n1qbah4cs668141iu-inil   <none>           <none>
+```
 
 
 5. Настроить CI для автоматической сборки и тестирования.
