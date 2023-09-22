@@ -927,7 +927,75 @@ nginx-5c5b498558-f4vx5   1/1     Running   0          4m17s   10.112.128.46   cl
 
 <img width="797" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/1c2ae5f9-0ad5-4d49-ac27-8ac4712b6945">
 
+### Настроить CI для автоматической сборки и тестирования. Настроить CD для автоматического развёртывания приложения
+Осталось настроить ci/cd систему для автоматической сборки docker image и деплоя приложения при изменении кода.
+
+Цель:
+
+Автоматическая сборка docker образа при коммите в репозиторий с тестовым приложением.
+Автоматический деплой нового docker образа.
+Можно использовать teamcity, jenkins, GitLab CI или GitHub Actions.
+
+Ожидаемый результат:
+
+Интерфейс ci/cd сервиса доступен по http.
+При любом коммите в репозиторие с тестовым приложением происходит сборка и отправка в регистр Docker образа.
+При создании тега (например, v1.0.0) происходит сборка и отправка с соответствующим label в регистр, а также деплой соответствующего Docker образа в кластер Kubernetes.
+
+В качестве системы CI/CD используется TeamCity на отдельном от кластера Kubernetes инстансе в YandexCloud.
+
+Создание новой ВМ в другой подсети
+
+<img width="338" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/402ae1f3-5453-45b5-a25a-254e1b8115c8">
+
+<img width="907" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/978eb5ef-b356-4091-b61e-42c303a1f2d5">
+
+Для запуска сервера и агентов Teamcity используется готовый docker-compose манифест. Подключение к ВМ и установка:
+```bash
+admin@teamcity:~$ sudo apt update & sudo apt install -y git docker docker-compose htop
+[1] 1156
+Reading package lists... Done
+Hit:1 http://mirror.yandex.ru/ubuntu jammy InRelease
+Get:2 http://mirror.yandex.ru/ubuntu jammy-updates InRelease [119 kB]
+Get:3 http://mirror.yandex.ru/ubuntu jammy-backports InRelease [109 kB]
+...
+[1]+  Done                    sudo apt update
+```
+```bash
+admin@teamcity:~$ git clone https://github.com/rowhe/teamcity-docker-samples.git
+Cloning into 'teamcity-docker-samples'...
+remote: Enumerating objects: 91, done.
+remote: Counting objects: 100% (13/13), done.
+remote: Compressing objects: 100% (7/7), done.
+remote: Total 91 (delta 6), reused 6 (delta 6), pack-reused 78
+Receiving objects: 100% (91/91), 17.37 KiB | 538.00 KiB/s, done.
+Resolving deltas: 100% (26/26), done.
+```
+Для работы kubectl c кластером нужно добавить в docker-compose.yml подключение раздела с ~/.kube/config и ~/.ssh/
+```bash
+admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ nano docker-compose.yml
+
+volumes:
+      - ~/.kube:/home/buildagent/.kube
+      - ~/.ssh:/home/buildagent/.ssh
+```
+
+<img width="506" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/a3e52912-245a-46b2-9624-1d2fb052c20d">
+
+Установка команды yc
+```bash
+admin@teamcity:~$ curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+Downloading yc 0.111.0
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  108M  100  108M    0     0  98.8M      0  0:00:01  0:00:01 --:--:-- 98.8M
+Yandex Cloud CLI 0.111.0 linux/amd64
+
+yc PATH has been added to your '/home/admin/.bashrc' profile
+yc bash completion has been added to your '/home/admin/.bashrc' profile.
+Now we have zsh completion. Type "echo 'source /home/admin/yandex-cloud/completion.zsh.inc' >>  ~/.zshrc" to install itTo complete installation, start a new shell (exec -l $SHELL) or type 'source "/home/admin/.bashrc"' in the current one
+```
 
 
-5. Настроить CI для автоматической сборки и тестирования.
-6. Настроить CD для автоматического развёртывания приложения.
+
+
