@@ -902,7 +902,7 @@ values.yaml
 replicaCount: 1
 image:
   repository: ruzina/nginx
-  tag: "latest"
+  tag: "1.0"
 service:
   type: NodePort
   port: 80
@@ -911,7 +911,7 @@ service:
 Проверка helm
 ```bash
 vagrant@vagrant:~/terraform1$ helm install simp-nginx simple-nginx
-NAME: simp-nginx
+NAME: nginx
 LAST DEPLOYED: Wed Sep 20 19:36:38 2023
 NAMESPACE: default
 STATUS: deployed
@@ -920,9 +920,13 @@ REVISION: 1
 Проверка запуска деплоймента
 ```bash
 vagrant@vagrant:~/terraform1$ kubectl get po -o wide
-NAME                                       READY   STATUS    RESTARTS   AGE   IP              NODE                        NOMINATED NODE   READINESS GATES
-simp-nginx-simple-nginx-5789db766c-h2m2k   1/1     Running   0          36s   10.112.128.32   cl1n1qbah4cs668141iu-inil   <none>           <none>
+NAME                     READY   STATUS    RESTARTS   AGE   IP              NODE                        NOMINATED NODE   READINESS GATES
+nginx-7d88c96474-c7ngr   1/1     Running   0          43h   10.112.128.35   cl1n1qbah4cs668141iu-inil   <none>           <none>
 ```
+<img width="920" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/a9cdb401-f91d-4fff-918c-42235543689a">
+
+<img width="668" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/f63558be-ad50-4f84-843b-a4d7723a6389">
+
 
 
 5. Настроить CI для автоматической сборки и тестирования.
