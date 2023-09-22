@@ -979,9 +979,60 @@ volumes:
       - ~/.kube:/home/buildagent/.kube
       - ~/.ssh:/home/buildagent/.ssh
 ```
+docker-compose.yml
+```bash
+version: '3.1'
 
-<img width="506" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/a3e52912-245a-46b2-9624-1d2fb052c20d">
 
+# Default ${TEAMCITY_VERSION} is defined in .env file
+
+# ./buildserver_pgdata - Posgres DB data
+# ./data_dir - TeamCity data directory
+# ./teamcity-server-logs - logs of primary TeamCity server
+# ./agents/agent-1/conf - configuration directory for the first build agent
+# ./agents/agent-1/conf - configuration directory for the second build agent
+
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=123
+      - POSTGRES_USER=teamcity
+      - POSTGRES_DB=teamcity_db
+      - PG_DATA=/var/lib/postgresql/data
+    volumes:
+      - ./buildserver_pgdata:/var/lib/postgresql/data
+      - ~/.kube:/home/buildagent/.kube
+      - ~/.ssh:/home/buildagent/.ssh
+    ports:
+      - 5433:5432
+
+  teamcity:
+    image: jetbrains/teamcity-server:${TEAMCITY_VERSION}
+    ports:
+      - "8112:8111"
+    volumes:
+      - ./data_dir:/data/teamcity_server/datadir
+      - ./teamcity-server-logs:/opt/teamcity/logs
+    depends_on:
+      - db
+
+  teamcity-agent-1:
+    image: jetbrains/teamcity-agent:${TEAMCITY_VERSION}-linux-sudo
+    privileged: true
+    volumes:
+      - ./agents/agent-1/conf:/data/teamcity_agent/conf
+    environment:
+      - DOCKER_IN_DOCKER=start
+  teamcity-agent-2:
+    image: jetbrains/teamcity-agent:${TEAMCITY_VERSION}-linux-sudo
+    privileged: true
+    volumes:
+      - ./agents/agent-2/conf:/data/teamcity_agent/conf
+    environment:
+      - DOCKER_IN_DOCKER=start
+```
 Установка команды yc
 ```bash
 admin@teamcity:~$ curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
@@ -994,6 +1045,15 @@ Yandex Cloud CLI 0.111.0 linux/amd64
 yc PATH has been added to your '/home/admin/.bashrc' profile
 yc bash completion has been added to your '/home/admin/.bashrc' profile.
 Now we have zsh completion. Type "echo 'source /home/admin/yandex-cloud/completion.zsh.inc' >>  ~/.zshrc" to install itTo complete installation, start a new shell (exec -l $SHELL) or type 'source "/home/admin/.bashrc"' in the current one
+```
+Запуск контейнеров
+```bash
+admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ sudo docker-compose up -d
+...
+Creating compose-ubuntu_teamcity-agent-2_1 ... done
+Creating compose-ubuntu_teamcity-agent-1_1 ... done
+Creating compose-ubuntu_db_1               ... done
+Creating compose-ubuntu_teamcity_1         ... done
 ```
 
 
