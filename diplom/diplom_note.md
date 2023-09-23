@@ -1186,12 +1186,16 @@ fi
 Скрипт шага 4:
 ```bash
 k8s_ip=$(/home/buildagent/yandex-cloud/bin/yc compute instance list | grep cp | cut -d"|" -f6 | sed 's/ //g'|head -n1);
-ssh -oStrictHostKeyChecking=no ubuntu@$k8s_ip sudo cat /root/.kube/config > ~/.kube/config;
+ssh -oStrictHostKeyChecking=no admin@$k8s_ip sudo cat /root/.kube/config > ~/.kube/config;
 chmod 600 ~/.kube/config;
 sed -i "s/127.0.0.1/$k8s_ip/g" ~/.kube/config;
 echo "##teamcity[setParameter name='K8S_IP' value='$k8s_ip']";
 ```
-
+Скрипт шага 5:
+```bash
+cd diplom/monitoring/helm;
+sudo helm --kubeconfig ~/.kube/config upgrade --install simple-nginx simple-nginx;
+```
 
 
 
