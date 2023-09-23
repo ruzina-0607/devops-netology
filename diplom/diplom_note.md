@@ -1121,11 +1121,27 @@ admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ sudo docker exec -it d6
 
 <img width="683" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/c19a16ac-294a-4a4a-8c96-487363dd9cb1">
 
+Создание в проекте две билд конфигурации с разными шагами сборки
+
+<img width="744" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/cb1b02e2-2dd3-4d00-a51b-182869d95751">
+
+В конфигурации Docker build + push есть триггер, который позволит ограничить срабатывание триггера и запуск билд-процесса
+
 <img width="631" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/bf8aa4a0-dabc-45e2-951a-f49382252602">
 
+Используемый VSC
 
+<img width="949" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/447189c2-9216-49b5-9b2f-782426bd3e1c">
 
+Подключение Docker
 
+<img width="866" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/1f5cbab7-8406-41c5-b90a-be2b4e28a1ed">
+
+Настройка шагов, описанных выше:
+
+<img width="641" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/1c1b789c-4013-4fa8-a9eb-418bde7e3e9d">
+
+<img width="691" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/dc8924e7-cae7-4c36-bc4f-7206fb1754c0">
 
 
 
