@@ -1076,7 +1076,7 @@ admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ docker logs 5bc41d5dc36
 
 Добавление connections для подключения к registry docker.io
 
-<img width="958" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/fcf39307-e0f3-4f2d-b050-6a34308f96a2">
+<img width="742" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/86019412-82ca-4b8a-86b1-91e9bdb6a3bc">
 
 Установка helm, kubectl и перенос .kube/config из кластера на агенты
 ```bash
@@ -1125,7 +1125,7 @@ admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ sudo docker exec -it d6
 
 <img width="744" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/cb1b02e2-2dd3-4d00-a51b-182869d95751">
 
-В конфигурации Docker build + push есть триггер, который позволит ограничить срабатывание триггера и запуск билд-процесса
+В конфигурации Docker build + push создадим триггер, который позволит ограничить срабатывание триггера и запуск билд-процесса
 
 <img width="631" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/bf8aa4a0-dabc-45e2-951a-f49382252602">
 
@@ -1143,11 +1143,54 @@ admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ sudo docker exec -it d6
 
 <img width="691" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/dc8924e7-cae7-4c36-bc4f-7206fb1754c0">
 
+Запуск первого шага
 
+<img width="929" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/d0593e15-8f36-42d8-ab4f-9741ec0c6fb5">
 
+Образ успешно появился в DockerHub
 
+<img width="549" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/b0a90f41-7420-4684-b677-32630e1f2fae">
 
+Для билд конфигурации Docker build + push + helm upgrade используем другой триггер
 
+<img width="804" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/ebb1e6a1-d9ec-4d0c-b984-da5065eebb0b">
+
+Доп. параметры:
+<img width="925" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/67ffc013-4b80-4d17-a939-93fb0f2fb131">
+
+Билд-фитча
+<img width="931" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/556408f2-50e7-471f-87be-5a3c4a2a7f0a">
+
+Шаги сборки
+<img width="920" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/300629e3-374b-4f3d-aabd-8dc6b2c7bd53">
+
+Скрипт шага1:
+```bash
+git fetch;
+
+release_tag=$(git tag --points-at HEAD);
+echo "\n"
+echo "Retrived tag is $release_tag";
+echo "\n"
+if [ -z $release_tag ]; then
+	echo "##teamcity[buildStatus status='FAILURE' text='No new release tag.']";
+fi
+	echo "##teamcity[setParameter name='RELEASE_TAG' value='$release_tag']";
+    
+	sed -i "s/Version.*/Version: $release_tag/g" diplom/app/docker/index.html;
+    echo "app index.html updated to tag $release_tag";
+    
+	sed -i "s/tag:.*/tag: \"$release_tag\"/g" diplom/monitoring/helm/simple-nginx/values.yaml;
+    echo "helm chart simple-nginx updated with tag $release_tag";
+```
+Скрипт шага 4:
+```bash
+k8s_ip=$(/home/buildagent/yandex-cloud/bin/yc compute instance list | grep cp | cut -d"|" -f6 | sed 's/ //g'|head -n1);
+ssh -oStrictHostKeyChecking=no ubuntu@$k8s_ip sudo cat /root/.kube/config > ~/.kube/config;
+chmod 600 ~/.kube/config;
+sed -i "s/127.0.0.1/$k8s_ip/g" ~/.kube/config;
+echo "##teamcity[setParameter name='K8S_IP' value='$k8s_ip']";
+```
 
 
 
