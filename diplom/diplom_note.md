@@ -1064,6 +1064,69 @@ admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ docker logs 5bc41d5dc36
 
 <img width="606" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/550dbcf4-01f0-49a0-a7a6-bdd3a72e91d9">
 
+Авторизация агентов и создание пользователя
+
+<img width="762" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/0196bf1e-c97e-4c04-bd3d-6365e0d19789">
+
+<img width="742" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/ed0fba49-0c1e-4e9a-b14e-6e0f244e1616">
+
+Создание проекта
+
+<img width="916" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/7674dbba-4f05-4a85-b64c-350ae675902a">
+
+Добавление connections для подключения к registry docker.io
+
+<img width="958" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/fcf39307-e0f3-4f2d-b050-6a34308f96a2">
+
+Установка helm, kubectl и перенос .kube/config из кластера на агенты
+```bash
+admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ docker ps
+CONTAINER ID   IMAGE                                        COMMAND                  CREATED        STATUS             PORTS                                       NAMES
+5bc41d5dc360   jetbrains/teamcity-server:2021.1             "/run-services.sh"       16 hours ago   Up About an hour   0.0.0.0:8112->8111/tcp, :::8112->8111/tcp   compose-ubuntu_teamcity_1
+96050616834b   jetbrains/teamcity-agent:2021.1-linux-sudo   "/run-services.sh"       16 hours ago   Up About an hour                                               compose-ubuntu_teamcity-agent-1_1
+d6238fb262b2   jetbrains/teamcity-agent:2021.1-linux-sudo   "/run-services.sh"       16 hours ago   Up About an hour                                               compose-ubuntu_teamcity-agent-2_1
+ebf38403e0fb   postgres:15.4                                "docker-entrypoint.s…"   16 hours ago   Up About an hour   0.0.0.0:5433->5432/tcp, :::5433->5432/tcp   compose-ubuntu_db_1
+```
+```bash
+admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ sudo docker exec -it 96050616834b sudo curl -LO https://storage.g
+oogleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bi
+n/linux/amd64/kubectl
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 47.5M  100 47.5M    0     0  18.4M      0  0:00:02  0:00:02 --:--:-- 18.4M
+
+admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ sudo docker exec -it 96050616834b sudo chmod +x kubectl
+admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ sudo docker exec -it 96050616834b sudo mv kubectl /usr/local/bin/
+
+admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ chmod 700 get_helm.sh
+admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ ./get_helm.sh
+Downloading https://get.helm.sh/helm-v3.12.3-linux-amd64.tar.gz
+Verifying checksum... Done.
+Preparing to install helm into /usr/local/bin
+helm installed into /usr/local/bin/helm
+
+admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ sudo docker exec -it d6238fb262b2 sudo curl -LO https://storage.g
+oogleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bi
+n/linux/amd64/kubectl
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100 47.5M  100 47.5M    0     0  20.2M      0  0:00:02  0:00:02 --:--:-- 20.2M
+admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ sudo docker exec -it d6238fb262b2 sudo chmod +x kubectl
+admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ sudo docker exec -it d6238fb262b2 sudo mv kubectl /usr/local/bin/
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
