@@ -1,0 +1,8 @@
+replicaCount: 1
+image:
+  repository: ruzina/nginx
+  tag: "0.1"
+service:
+  type: NodePort
+  port: 80
+  nodePort: 30001
