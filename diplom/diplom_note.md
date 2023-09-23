@@ -994,17 +994,15 @@ version: '3.1'
 
 services:
   db:
-    image: postgres:latest
+    image: postgres:15.4
     restart: always
     environment:
       - POSTGRES_PASSWORD=123
-      - POSTGRES_USER=teamcity
+      - POSTGRES_USER=admin
       - POSTGRES_DB=teamcity_db
       - PG_DATA=/var/lib/postgresql/data
     volumes:
       - ./buildserver_pgdata:/var/lib/postgresql/data
-      - ~/.kube:/home/buildagent/.kube
-      - ~/.ssh:/home/buildagent/.ssh
     ports:
       - 5433:5432
 
@@ -1030,6 +1028,8 @@ services:
     privileged: true
     volumes:
       - ./agents/agent-2/conf:/data/teamcity_agent/conf
+      - ~/.kube:/home/buildagent/.kube
+      - ~/.ssh:/home/buildagent/.ssh
     environment:
       - DOCKER_IN_DOCKER=start
 ```
@@ -1055,6 +1055,14 @@ Creating compose-ubuntu_teamcity-agent-1_1 ... done
 Creating compose-ubuntu_db_1               ... done
 Creating compose-ubuntu_teamcity_1         ... done
 ```
+Получение токена пользователя
+```bash
+admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ docker logs 5bc41d5dc360 | grep token
+[TeamCity] Super user authentication token: 13828*******93978 (use empty username with the token as the password to access the server)
+```
+Подключение к Teamcity под пользователем с помощью токена
+
+<img width="606" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/550dbcf4-01f0-49a0-a7a6-bdd3a72e91d9">
 
 
 
