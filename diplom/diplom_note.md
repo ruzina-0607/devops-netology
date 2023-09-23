@@ -1115,6 +1115,14 @@ n/linux/amd64/kubectl
 admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ sudo docker exec -it d6238fb262b2 sudo chmod +x kubectl
 admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ sudo docker exec -it d6238fb262b2 sudo mv kubectl /usr/local/bin/
 ```
+Для разного функционала билдов необходимо использовать два варианта настройки VCS
+
+<img width="668" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/0ee5d3d8-b03b-4d8f-b0a1-e85f8d84d92a">
+
+<img width="683" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/c19a16ac-294a-4a4a-8c96-487363dd9cb1">
+
+<img width="631" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/bf8aa4a0-dabc-45e2-951a-f49382252602">
+
 
 
 
