@@ -1077,7 +1077,7 @@ admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ sudo docker exec -it d6
 
 Подключение Docker
 
-<img width="866" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/1f5cbab7-8406-41c5-b90a-be2b4e28a1ed">
+<img width="590" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/883dc057-0117-40cc-844f-0d05c051ef2d">
 
 Настройка шагов, описанных выше:
 
@@ -1098,18 +1098,23 @@ admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ sudo docker exec -it d6
 <img width="804" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/ebb1e6a1-d9ec-4d0c-b984-da5065eebb0b">
 
 Доп. параметры:
+
 <img width="731" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/78610ea1-dfed-4561-8831-f71fc7259a49">
 
 Билд-фитча
+
 <img width="931" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/556408f2-50e7-471f-87be-5a3c4a2a7f0a">
 
 Шаги сборки
+
 <img width="740" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/d1e34529-94e6-4814-8a14-f928f3be3dd8">
 
 Успешный билд
+
 <img width="924" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/d4cc1b10-b850-4593-b488-be0d66ad4c73">
 
 Проверка пуша тега 1.2.2
+
 <img width="544" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/db6c6149-b086-4477-b39d-48d5c63eac92">
 
 Также запущенный в кластере Kubernetes деплоймент демонстрирует тег 1.2.2
