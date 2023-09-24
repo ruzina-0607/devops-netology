@@ -571,13 +571,6 @@ Git репозиторий с тестовым приложением и Dockerf
 vagrant@vagrant:~/terraform1$ docker run -d --rm -p 80:80 --name nginx ruzina/nginx:0.1
 e2bf81f70279e6838769e73c9fa7c8d4ebd82a81ae6ccc7126d9112232598331
 
-vagrant@vagrant:~/terraform1$ curl localhost
-<html>
-<body>
-        <h1>Host: e2bf81f70279</h1>
-        Version: 1.1
-</body>
-</html>
 ```
 ### Задание 4. Установить и настроить систему мониторинга.
 Уже должны быть готовы конфигурации для автоматического создания облачной инфраструктуры и поднятия Kubernetes кластера.
