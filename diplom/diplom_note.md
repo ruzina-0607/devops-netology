@@ -248,8 +248,6 @@ Apply complete! Resources: 4 added, 0 changed, 0 destroyed.
 2. Альтернативный вариант: воспользуйтесь сервисом Yandex Managed Service for Kubernetes
 
   а. С помощью terraform resource для kubernetes создать региональный мастер kubernetes с размещением нод в разных 3 подсетях
-  
-  б. С помощью terraform resource для kubernetes node group
 
 master.tf
 ```bash
