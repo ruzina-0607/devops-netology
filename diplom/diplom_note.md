@@ -1033,7 +1033,7 @@ services:
     environment:
       - DOCKER_IN_DOCKER=start
 ```
-Установка команды yc
+Установка команды yc на агенты
 ```bash
 admin@teamcity:~$ curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
 Downloading yc 0.111.0
@@ -1045,6 +1045,11 @@ Yandex Cloud CLI 0.111.0 linux/amd64
 yc PATH has been added to your '/home/admin/.bashrc' profile
 yc bash completion has been added to your '/home/admin/.bashrc' profile.
 Now we have zsh completion. Type "echo 'source /home/admin/yandex-cloud/completion.zsh.inc' >>  ~/.zshrc" to install itTo complete installation, start a new shell (exec -l $SHELL) or type 'source "/home/admin/.bashrc"' in the current one
+```
+Перенос конфиг на оба агента
+```bash
+docker cp .config/yandex-cloud/config.yaml 96050616834b:home/buildagent/.config/yandex-cloud
+docker cp .config/yandex-cloud/config.yaml d6238fb262b2:home/buildagent/.config/yandex-cloud
 ```
 Запуск контейнеров
 ```bash
@@ -1156,48 +1161,27 @@ admin@teamcity:~/teamcity-docker-samples/compose-ubuntu$ sudo docker exec -it d6
 <img width="804" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/ebb1e6a1-d9ec-4d0c-b984-da5065eebb0b">
 
 Доп. параметры:
-<img width="925" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/67ffc013-4b80-4d17-a939-93fb0f2fb131">
+<img width="731" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/78610ea1-dfed-4561-8831-f71fc7259a49">
 
 Билд-фитча
 <img width="931" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/556408f2-50e7-471f-87be-5a3c4a2a7f0a">
 
 Шаги сборки
-<img width="920" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/300629e3-374b-4f3d-aabd-8dc6b2c7bd53">
+<img width="740" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/d1e34529-94e6-4814-8a14-f928f3be3dd8">
 
-Скрипт шага1:
+Успешный билд
+<img width="924" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/d4cc1b10-b850-4593-b488-be0d66ad4c73">
+
+Проверка пуша тега 1.2.2
+<img width="544" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/db6c6149-b086-4477-b39d-48d5c63eac92">
+
+Также запущенный в кластере Kubernetes деплоймент демонстрирует тег 1.2.2
 ```bash
-git fetch;
-
-release_tag=$(git tag --points-at HEAD);
-echo "\n"
-echo "Retrived tag is $release_tag";
-echo "\n"
-if [ -z $release_tag ]; then
-	echo "##teamcity[buildStatus status='FAILURE' text='No new release tag.']";
-fi
-	echo "##teamcity[setParameter name='RELEASE_TAG' value='$release_tag']";
-    
-	sed -i "s/Version.*/Version: $release_tag/g" diplom/app/docker/index.html;
-    echo "app index.html updated to tag $release_tag";
-    
-	sed -i "s/tag:.*/tag: \"$release_tag\"/g" diplom/monitoring/helm/simple-nginx/values.yaml;
-    echo "helm chart simple-nginx updated with tag $release_tag";
+vagrant@vagrant:~$ kubectl get deploy -o wide
+NAME    READY   UP-TO-DATE   AVAILABLE   AGE     CONTAINERS   IMAGES               SELECTOR
+nginx   1/1     1            1           3d22h   nginx        ruzina/nginx:1.2.2   app=nginx
 ```
-Скрипт шага 4:
-```bash
-k8s_ip=$(/home/buildagent/yandex-cloud/bin/yc compute instance list | grep cp | cut -d"|" -f6 | sed 's/ //g'|head -n1);
-ssh -oStrictHostKeyChecking=no admin@$k8s_ip sudo cat /root/.kube/config > ~/.kube/config;
-chmod 600 ~/.kube/config;
-sed -i "s/127.0.0.1/$k8s_ip/g" ~/.kube/config;
-echo "##teamcity[setParameter name='K8S_IP' value='$k8s_ip']";
-```
-Скрипт шага 5:
-```bash
-cd diplom/monitoring/helm;
-sudo helm --kubeconfig ~/.kube/config upgrade --install simple-nginx simple-nginx;
-```
+Также проверка веб интерфейса с новым тегом
 
-
-
-
+<img width="612" alt="image" src="https://github.com/ruzina-0607/devops-netology/assets/104915472/d20fca28-b950-4d2b-bfb9-0fe7c5121cdd">
 
